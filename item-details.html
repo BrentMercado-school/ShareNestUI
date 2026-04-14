@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details</title>
+</head>
+<body>
+    <h1>Item Details</h1>
+
+    <p><strong>Name:</strong> <span id="item-name"></span></p>
+    <p><strong>Category:</strong> <span id="item-category"></span></p>
+    <p><strong>Description:</strong> <span id="item-description"></span></p>
+    <p><strong>Condition:</strong> <span id="item-condition"></span></p>
+    <p><strong>Security Deposit:</strong> <span id="item-security-deposit"></span></p>
+    <p><strong>Note:</strong> <span id="item-note"></span></p>
+    <p><strong>Borrowing Fee:</strong> <span id="item-borrowing-fee"></span></p>
+    <p><strong>Status:</strong> <span id="item-status"></span></p>
+    <p><strong>Owner:</strong> <span id="item-owner"></span></p>
+
+    <button onclick="window.location.href='dashboard.html'">Back</button>
+    <button id="open-borrow-modal">Borrow Item</button>
+
+    <div id="borrow-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="background: white; padding:20px; border:1px solid #ccc; width:300px;">
+            <h2>Borrow Item</h2>
+
+            <form id="borrow-form">
+                <div>
+                    <label for="start-date">Start Date</label>
+                    <input type="date" id="start-date" required>
+                </div>
+
+                <div>
+                    <label for="return-date">Return Date</label>
+                    <input type="date" id="return-date" required>
+                </div>
+
+                <div style="margin-top: 12px;">
+                    <button type="button" id="close-borrow-modal">Cancel</button>
+                    <button type="submit">Submit Borrow Request</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <script src="js/item-details.js"></script>
+</body>
+</html>

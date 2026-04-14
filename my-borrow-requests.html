@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Borrow Requests</title>
+</head>
+<body>
+    <h1>My Borrow Requests</h1>
+
+    <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Owner</th>
+                <th>Start Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+                <th>Decline Reason</th>
+                <th>Borrowing Fee Snapshot</th>
+                <th>Security Deposit Snapshot</th>
+            </tr>
+        </thead>
+        <tbody id="my-borrow-requests"></tbody>
+    </table>
+
+    <script src="js/my-borrow-requests.js"></script>
+</body>
+</html>
