@@ -47,6 +47,12 @@ async function getAllItems() {
 
             actionsCell.appendChild(viewBtn);
 
+            const expectedReturnDateCell = document.createElement("td");
+            expectedReturnDateCell.textContent =
+                item.status === "BORROWED"
+                    ? formatDate(item.expected_return_date)
+                    : "N/A";
+
             row.appendChild(nameCell);
             row.appendChild(conditionCell);
             row.appendChild(secDepoCell);
@@ -55,6 +61,7 @@ async function getAllItems() {
             row.appendChild(statusCell);
             row.appendChild(ownerCell);
             row.appendChild(actionsCell);
+            row.appendChild(expectedReturnDateCell);
 
             tbody.appendChild(row);
         }
@@ -202,6 +209,12 @@ async function getLatestItems() {
             const dateCell = document.createElement("td");
             dateCell.textContent = formatDate(item.createdAt);
 
+            const expectedReturnDateCell = document.createElement("td");
+            expectedReturnDateCell.textContent =
+                item.status === "BORROWED"
+                    ? formatDate(item.expected_return_date)
+                    : "N/A";
+
             row.appendChild(nameCell);
             row.appendChild(conditionCell);
             row.appendChild(secDepoCell);
@@ -209,7 +222,8 @@ async function getLatestItems() {
             row.appendChild(borrowFeeCell);
             row.appendChild(statusCell);
             row.appendChild(ownerCell);
-            row.appendChild(dateCell)
+            row.appendChild(dateCell);
+            row.appendChild(expectedReturnDateCell);
 
             tbody.appendChild(row);
         }
@@ -218,7 +232,144 @@ async function getLatestItems() {
     }
 }
 
-getLatestItems();
+async function getSportsItems() {
+    try {
+        const response = await fetch(API_URL + "items/sports/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        });
 
+        const data = await response.json();
+        const tbody = document.getElementById("sports-category");
+        tbody.innerHTML = "";
+
+        for (const item of data) {
+            const row = document.createElement("tr");
+
+            const nameCell = document.createElement("td");
+            nameCell.textContent = item.name || "N/A";
+
+            const categoryCell = document.createElement("td");
+            categoryCell.textContent = item.category_name || "N/A";
+
+            const conditionCell = document.createElement("td");
+            conditionCell.textContent = item.condition || "N/A";
+
+            const secDepoCell = document.createElement("td");
+            secDepoCell.textContent = item.security_deposit || "N/A";
+
+            const noteCell = document.createElement("td");
+            noteCell.textContent = item.note || "N/A";
+
+            const borrowFeeCell = document.createElement("td");
+            borrowFeeCell.textContent = item.borrowingFee || "N/A";
+
+            const statusCell = document.createElement("td");
+            statusCell.textContent = item.status || "N/A";
+
+            const ownerCell = document.createElement("td");
+            ownerCell.textContent = item.owner_name || "N/A";
+
+            const dateCell = document.createElement("td");
+            dateCell.textContent = formatDate(item.createdAt);
+
+            const expectedReturnDateCell = document.createElement("td");
+            expectedReturnDateCell.textContent =
+                item.status === "BORROWED"
+                    ? formatDate(item.expected_return_date)
+                    : "N/A";
+
+            row.appendChild(nameCell);
+            row.appendChild(categoryCell);
+            row.appendChild(conditionCell);
+            row.appendChild(secDepoCell);
+            row.appendChild(noteCell);
+            row.appendChild(borrowFeeCell);
+            row.appendChild(statusCell);
+            row.appendChild(ownerCell);
+            row.appendChild(dateCell);
+            row.appendChild(expectedReturnDateCell);
+
+            tbody.appendChild(row);
+        }
+    } catch (error) {
+        console.log("getLatestItems error:", error);
+    }
+}
+
+async function getElectronicsItems() {
+    try {
+        const response = await fetch(API_URL + "items/electronics/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        });
+
+        const data = await response.json();
+        const tbody = document.getElementById("electronics-category");
+        tbody.innerHTML = "";
+
+        for (const item of data) {
+            const row = document.createElement("tr");
+
+            const nameCell = document.createElement("td");
+            nameCell.textContent = item.name || "N/A";
+
+            const categoryCell = document.createElement("td");
+            categoryCell.textContent = item.category_name || "N/A";
+
+            const conditionCell = document.createElement("td");
+            conditionCell.textContent = item.condition || "N/A";
+
+            const secDepoCell = document.createElement("td");
+            secDepoCell.textContent = item.security_deposit || "N/A";
+
+            const noteCell = document.createElement("td");
+            noteCell.textContent = item.note || "N/A";
+
+            const borrowFeeCell = document.createElement("td");
+            borrowFeeCell.textContent = item.borrowingFee || "N/A";
+
+            const statusCell = document.createElement("td");
+            statusCell.textContent = item.status || "N/A";
+
+            const ownerCell = document.createElement("td");
+            ownerCell.textContent = item.owner_name || "N/A";
+
+            const dateCell = document.createElement("td");
+            dateCell.textContent = formatDate(item.createdAt);
+
+            const expectedReturnDateCell = document.createElement("td");
+            expectedReturnDateCell.textContent =
+                item.status === "BORROWED"
+                    ? formatDate(item.expected_return_date)
+                    : "N/A";
+
+            row.appendChild(nameCell);
+            row.appendChild(categoryCell);
+            row.appendChild(conditionCell);
+            row.appendChild(secDepoCell);
+            row.appendChild(noteCell);
+            row.appendChild(borrowFeeCell);
+            row.appendChild(statusCell);
+            row.appendChild(ownerCell);
+            row.appendChild(dateCell);
+            row.appendChild(expectedReturnDateCell);
+
+            tbody.appendChild(row);
+        }
+    } catch (error) {
+        console.log("getLatestItems error:", error);
+    }
+}
+
+getElectronicsItems()
+getSportsItems()
+getLatestItems();
 getAllItems();
 getAllUserItems();
