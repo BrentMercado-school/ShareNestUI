@@ -5,6 +5,18 @@ function getItemIdFromUrl() {
     return params.get("id");
 }
 
+function formatDate(dateString) {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+
+    return date.toLocaleDateString("en-PH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+}
+
 async function getItemDetails() {
     const itemId = getItemIdFromUrl();
 
@@ -35,6 +47,21 @@ async function getItemDetails() {
             document.getElementById("item-borrowing-fee").textContent = data.borrowingFee || "N/A";
             document.getElementById("item-status").textContent = data.status || "N/A";
             document.getElementById("item-owner").textContent = data.owner_name || "N/A";
+
+            const expectedReturnDateElement = document.getElementById("item-expected-return-date");
+            const borrowButton = document.getElementById("open-borrow-modal");
+
+            if (data.status === "BORROWED") {
+                expectedReturnDateElement.textContent = formatDate(data.expected_return_date);
+                if (borrowButton) {
+                    borrowButton.style.display = "none";
+                }
+            } else {
+                expectedReturnDateElement.textContent = "N/A";
+                if (borrowButton) {
+                    borrowButton.style.display = "inline-block";
+                }
+            }
         } else {
             alert(data.detail || "Failed to load item details.");
         }

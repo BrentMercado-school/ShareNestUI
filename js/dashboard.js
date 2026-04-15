@@ -38,6 +38,7 @@ async function getAllItems() {
             ownerCell.textContent = item.owner_name || "N/A";
 
             const actionsCell = document.createElement("td");
+
             const viewBtn = document.createElement("button");
             viewBtn.textContent = "View Details";
 
@@ -125,8 +126,16 @@ async function getAllUserItems() {
                 await deleteItem(item.id);
             });
 
+            const viewBtn = document.createElement("button");
+            viewBtn.textContent = "View Details";
+
+            viewBtn.addEventListener("click", () => {
+                window.location.href = `owned-item-details.html?id=${item.id}`;
+            });
+
             actionsCell.appendChild(editBtn);
             actionsCell.appendChild(deleteBtn);
+            actionsCell.appendChild(viewBtn);
 
             if (item.status === "BORROWED") {
                 const returnBtn = document.createElement("button");
