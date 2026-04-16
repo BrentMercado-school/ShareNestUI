@@ -53,14 +53,18 @@ async function getAllUserItems() {
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
             deleteBtn.style.marginRight = "8px";
-            deleteBtn.addEventListener("click", async () => {
-                const isConfirmed = confirm(`Are you sure you want to delete "${item.name}"?`);
 
-                if (!isConfirmed) return;
+            if (item.status === "BORROWED") {
+                deleteBtn.disabled = true;
+                deleteBtn.title = "Borrowed items cannot be deleted";
+            } else {
+                deleteBtn.addEventListener("click", async () => {
+                    const isConfirmed = confirm(`Are you sure you want to delete "${item.name}"?`);
+                    if (!isConfirmed) return;
 
-                await deleteItem(item.id);
-            });
-
+                    await deleteItem(item.id);
+                });
+             }   
             const viewBtn = document.createElement("button");
             viewBtn.textContent = "View Details";
 

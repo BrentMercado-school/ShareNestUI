@@ -21,7 +21,6 @@ async function deleteItem(itemId) {
 
         if (response.ok) {
             alert(data.message || "Item deleted successfully.");
-
             if (typeof loadMyItems === "function") {
                 await loadMyItems();
             } else if (typeof getAllUserItems === "function") {
@@ -29,7 +28,6 @@ async function deleteItem(itemId) {
             }
         } else {
             alert(data.message || data.detail || "Failed to delete item.");
-            console.log(data);
         }
     } catch (error) {
         console.log("deleteItem error:", error);
