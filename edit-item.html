@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Item</title>
+</head>
+<body>
+    <h1>Edit Item</h1>
+
+    <form id="edit-item-form">
+        <div>
+            <label for="edit-item-name">Name</label>
+            <input type="text" id="edit-item-name" required>
+        </div>
+
+        <div>
+            <label for="edit-item-category">Category</label>
+            <select id="edit-item-category" required>
+                <option value="">Select category</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="edit-item-description">Description</label>
+            <input type="text" id="edit-item-description" required>
+        </div>
+
+        <div>
+            <label for="edit-item-condition">Condition</label>
+            <input type="text" id="edit-item-condition" required>
+        </div>
+
+        <div>
+            <label for="edit-item-security-deposit">Security Deposit</label>
+            <input type="number" id="edit-item-security-deposit" required>
+        </div>
+
+        <div>
+            <label for="edit-item-note">Note</label>
+            <textarea id="edit-item-note"></textarea>
+        </div>
+
+        <div>
+            <label for="edit-item-borrowing-fee">Borrowing Fee</label>
+            <input type="number" id="edit-item-borrowing-fee" required>
+        </div>
+
+        <div>
+            <label for="edit-item-status">Status</label>
+            <select id="edit-item-status">
+                <option value="AVAILABLE">AVAILABLE</option>
+                <option value="BORROWED">BORROWED</option>
+                <option value="UNAVAILABLE">UNAVAILABLE</option>
+            </select>
+        </div>
+
+        <div style="margin-top: 12px;">
+            <button type="button" onclick="window.location.href='my-items.html'">Cancel</button>
+            <button type="submit">Update Item</button>
+        </div>
+    </form>
+
+    <script src="js/edit-item-page.js"></script>
+</body>
+</html>
