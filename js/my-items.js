@@ -329,6 +329,9 @@ function createItemRow(item) {
     const nameCell = document.createElement("td");
     nameCell.textContent = item.name || "N/A";
 
+    const categoryCell = document.createElement("td");
+    categoryCell.textContent = item.category_name || "N/A";
+
     const conditionCell = document.createElement("td");
     conditionCell.textContent = item.condition || "N/A";
 
@@ -394,6 +397,7 @@ function createItemRow(item) {
     }
 
     row.appendChild(nameCell);
+    row.appendChild(categoryCell);
     row.appendChild(conditionCell);
     row.appendChild(secDepoCell);
     row.appendChild(noteCell);
