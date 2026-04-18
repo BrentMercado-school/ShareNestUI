@@ -67,7 +67,19 @@ async function getBorrowRequests() {
         const tbody = document.getElementById("borrow-requests");
         tbody.innerHTML = "";
 
-        for (const request of data) {
+        const pendingRequests = data.filter((request) => request.status === "PENDING");
+
+        if (!pendingRequests.length) {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+            cell.colSpan = 9;
+            cell.textContent = "No pending borrow requests found.";
+            row.appendChild(cell);
+            tbody.appendChild(row);
+            return;
+        }
+
+        for (const request of pendingRequests) {
             const row = document.createElement("tr");
 
             const borrowerCell = document.createElement("td");
@@ -96,32 +108,27 @@ async function getBorrowRequests() {
 
             const actionsCell = document.createElement("td");
 
-            if (request.status === "PENDING") {
-                const acceptBtn = document.createElement("button");
-                acceptBtn.textContent = "Accept";
-                acceptBtn.addEventListener("click", async () => {
-                    const isConfirmed = confirm("Approve this borrow request?");
-                    if (!isConfirmed) return;
+            const acceptBtn = document.createElement("button");
+            acceptBtn.textContent = "Accept";
+            acceptBtn.addEventListener("click", async () => {
+                const isConfirmed = confirm("Approve this borrow request?");
+                if (!isConfirmed) return;
 
-                    await acceptBorrowRequest(request.id);
-                });
+                await acceptBorrowRequest(request.id);
+            });
 
-                const declineBtn = document.createElement("button");
-                declineBtn.textContent = "Decline";
-                declineBtn.addEventListener("click", async () => {
-                    const isConfirmed = confirm("Decline this borrow request?");
-                    if (!isConfirmed) return;
+            const declineBtn = document.createElement("button");
+            declineBtn.textContent = "Decline";
+            declineBtn.addEventListener("click", async () => {
+                const isConfirmed = confirm("Decline this borrow request?");
+                if (!isConfirmed) return;
 
-                    const declineReason = prompt("Enter decline reason:") || "";
+                const declineReason = prompt("Enter decline reason:") || "";
+                await declineBorrowRequest(request.id, declineReason);
+            });
 
-                    await declineBorrowRequest(request.id, declineReason);
-                });
-
-                actionsCell.appendChild(acceptBtn);
-                actionsCell.appendChild(declineBtn);
-            } else {
-                actionsCell.textContent = "-";
-            }
+            actionsCell.appendChild(acceptBtn);
+            actionsCell.appendChild(declineBtn);
 
             row.appendChild(borrowerCell);
             row.appendChild(itemCell);
