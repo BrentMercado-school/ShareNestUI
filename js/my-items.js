@@ -11,6 +11,7 @@ const editItemForm = document.getElementById("edit-item-form");
 const editCategorySelect = document.getElementById("edit-item-category");
 
 let selectedEditItemId = null;
+let selectedEditItem = null;
 
 // RETURN ITEM MODAL ELEMENTS
 const returnItemModal = document.getElementById("return-item-modal");
@@ -128,6 +129,7 @@ async function loadEditCategories(selectedCategoryId = "") {
 
 async function openEditItemModal(item) {
     selectedEditItemId = item.id;
+    selectedEditItem = item;
 
     await loadEditCategories(item.category);
 
@@ -136,7 +138,7 @@ async function openEditItemModal(item) {
     document.getElementById("edit-item-condition").value = item.condition || "";
     document.getElementById("edit-item-security-deposit").value = item.security_deposit || "";
     document.getElementById("edit-item-note").value = item.note || "";
-    document.getElementById("edit-item-borrowing-fee").value = item.borrowingFee || "";
+    document.getElementById("edit-item-borrowing-fee").value = item.borrowingFee || item.borrowing_fee || "";
     document.getElementById("edit-item-status").value = item.status || "AVAILABLE";
 
     editItemModal.classList.add("show");
@@ -146,6 +148,7 @@ function closeEditItemModal() {
     editItemModal.classList.remove("show");
     editItemForm.reset();
     selectedEditItemId = null;
+    selectedEditItem = null;
 }
 
 if (closeEditItemModalBtn) {
@@ -175,8 +178,8 @@ if (editItemForm) {
         const condition = document.getElementById("edit-item-condition").value;
         const security_deposit = document.getElementById("edit-item-security-deposit").value;
         const note = document.getElementById("edit-item-note").value;
-        const borrowingFee = document.getElementById("edit-item-borrowing-fee").value;
-        const status = document.getElementById("edit-item-status").value;
+        const borrowingFee = selectedEditItem?.borrowingFee ?? selectedEditItem?.borrowing_fee ?? "20";
+        const status = selectedEditItem?.status ?? "AVAILABLE";
 
         try {
             const response = await fetch(API_URL + `items/${selectedEditItemId}/update/`, {
