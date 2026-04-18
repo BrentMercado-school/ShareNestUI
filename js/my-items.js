@@ -347,6 +347,12 @@ function createItemRow(item) {
     const statusCell = document.createElement("td");
     statusCell.textContent = item.status || "N/A";
 
+    const expectedReturnDateCell = document.createElement("td");
+    expectedReturnDateCell.textContent =
+        item.status === "BORROWED"
+            ? formatDate(item.expected_return_date)
+            : "N/A";
+
     const actionsCell = document.createElement("td");
 
     const editBtn = document.createElement("button");
@@ -403,6 +409,7 @@ function createItemRow(item) {
     row.appendChild(noteCell);
     row.appendChild(borrowFeeCell);
     row.appendChild(statusCell);
+    row.appendChild(expectedReturnDateCell);
     row.appendChild(actionsCell);
 
     return row;
