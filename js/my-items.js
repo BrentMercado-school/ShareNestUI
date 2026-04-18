@@ -1,6 +1,8 @@
 const API_URL = "http://127.0.0.1:8000/api/";
 
 const tbody = document.getElementById("owned-items");
+const availableTbody = document.getElementById("available-owned-items");
+const borrowedTbody = document.getElementById("borrowed-owned-items");
 
 // EDIT ITEM MODAL ELEMENTS
 const editItemModal = document.getElementById("edit-item-modal");
@@ -46,6 +48,19 @@ function parseLocalDate(dateString) {
 function formatMoney(value) {
     if (value === null || value === undefined || value === "") return "N/A";
     return Number(value).toFixed(2);
+}
+
+function renderEmptyRow(targetTbody, message) {
+    targetTbody.innerHTML = "";
+
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+
+    cell.colSpan = 7;
+    cell.textContent = message;
+
+    row.appendChild(cell);
+    targetTbody.appendChild(row);
 }
 
 /* =========================
@@ -308,6 +323,87 @@ if (returnItemForm) {
     });
 }
 
+function createItemRow(item) {
+    const row = document.createElement("tr");
+
+    const nameCell = document.createElement("td");
+    nameCell.textContent = item.name || "N/A";
+
+    const conditionCell = document.createElement("td");
+    conditionCell.textContent = item.condition || "N/A";
+
+    const secDepoCell = document.createElement("td");
+    secDepoCell.textContent = formatMoney(item.security_deposit);
+
+    const noteCell = document.createElement("td");
+    noteCell.textContent = item.note || "N/A";
+
+    const borrowFeeCell = document.createElement("td");
+    borrowFeeCell.textContent = formatMoney(item.borrowingFee ?? item.borrowing_fee);
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = item.status || "N/A";
+
+    const actionsCell = document.createElement("td");
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit";
+
+    if (item.status === "BORROWED") {
+        editBtn.disabled = true;
+        editBtn.title = "Borrowed items cannot be edited";
+    } else {
+        editBtn.addEventListener("click", async () => {
+            await openEditItemModal(item);
+        });
+    }
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+
+    if (item.status === "BORROWED") {
+        deleteBtn.disabled = true;
+        deleteBtn.title = "Borrowed items cannot be deleted";
+    } else {
+        deleteBtn.addEventListener("click", async () => {
+            const isConfirmed = confirm(`Are you sure you want to delete "${item.name}"?`);
+            if (!isConfirmed) return;
+
+            await deleteItem(item.id);
+        });
+    }
+
+    const viewBtn = document.createElement("button");
+    viewBtn.textContent = "View Details";
+    viewBtn.addEventListener("click", () => {
+        window.location.href = `owned-item-details.html?id=${item.id}`;
+    });
+
+    actionsCell.appendChild(editBtn);
+    actionsCell.appendChild(deleteBtn);
+    actionsCell.appendChild(viewBtn);
+
+    if (item.status === "BORROWED") {
+        const returnBtn = document.createElement("button");
+        returnBtn.textContent = "Return";
+        returnBtn.addEventListener("click", () => {
+            openReturnItemModal(item);
+        });
+
+        actionsCell.appendChild(returnBtn);
+    }
+
+    row.appendChild(nameCell);
+    row.appendChild(conditionCell);
+    row.appendChild(secDepoCell);
+    row.appendChild(noteCell);
+    row.appendChild(borrowFeeCell);
+    row.appendChild(statusCell);
+    row.appendChild(actionsCell);
+
+    return row;
+}
+
 // LOAD USER ITEMS
 async function getAllUserItems() {
     try {
@@ -327,86 +423,37 @@ async function getAllUserItems() {
         }
 
         tbody.innerHTML = "";
+        availableTbody.innerHTML = "";
+
+        if (!data.length) {
+            renderEmptyRow(tbody, "No owned items found.");
+            renderEmptyRow(availableTbody, "No available items found.");
+            renderEmptyRow(borrowedTbody, "No borrowed items found.");
+            return;
+        }
 
         for (const item of data) {
-            const row = document.createElement("tr");
+            tbody.appendChild(createItemRow(item));
+        }
 
-            const nameCell = document.createElement("td");
-            nameCell.textContent = item.name || "N/A";
+        const availableItems = data.filter((item) => item.status === "AVAILABLE");
 
-            const conditionCell = document.createElement("td");
-            conditionCell.textContent = item.condition || "N/A";
-
-            const secDepoCell = document.createElement("td");
-            secDepoCell.textContent = formatMoney(item.security_deposit);
-
-            const noteCell = document.createElement("td");
-            noteCell.textContent = item.note || "N/A";
-
-            const borrowFeeCell = document.createElement("td");
-            borrowFeeCell.textContent = formatMoney(item.borrowingFee ?? item.borrowing_fee);
-
-            const statusCell = document.createElement("td");
-            statusCell.textContent = item.status || "N/A";
-
-            const actionsCell = document.createElement("td");
-
-            const editBtn = document.createElement("button");
-            editBtn.textContent = "Edit";
-
-            if (item.status === "BORROWED") {
-                editBtn.disabled = true;
-                editBtn.title = "Borrowed items cannot be edited";
-            } else {
-                editBtn.addEventListener("click", async () => {
-                    await openEditItemModal(item);
-                });
+        if (!availableItems.length) {
+            renderEmptyRow(availableTbody, "No available items found.");
+        } else {
+            for (const item of availableItems) {
+                availableTbody.appendChild(createItemRow(item));
             }
+        }
+        
+        const borrowedItems = data.filter((item) => item.status === "BORROWED");
 
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Delete";
-
-            if (item.status === "BORROWED") {
-                deleteBtn.disabled = true;
-                deleteBtn.title = "Borrowed items cannot be deleted";
-            } else {
-                deleteBtn.addEventListener("click", async () => {
-                    const isConfirmed = confirm(`Are you sure you want to delete "${item.name}"?`);
-                    if (!isConfirmed) return;
-
-                    await deleteItem(item.id);
-                });
+        if (!borrowedItems.length) {
+            renderEmptyRow(borrowedTbody, "No borrowed items found.");
+        } else {
+            for (const item of borrowedItems) {
+                borrowedTbody.appendChild(createItemRow(item));
             }
-
-            const viewBtn = document.createElement("button");
-            viewBtn.textContent = "View Details";
-            viewBtn.addEventListener("click", () => {
-                window.location.href = `owned-item-details.html?id=${item.id}`;
-            });
-
-            actionsCell.appendChild(editBtn);
-            actionsCell.appendChild(deleteBtn);
-            actionsCell.appendChild(viewBtn);
-
-            if (item.status === "BORROWED") {
-                const returnBtn = document.createElement("button");
-                returnBtn.textContent = "Return";
-                returnBtn.addEventListener("click", () => {
-                    openReturnItemModal(item);
-                });
-
-                actionsCell.appendChild(returnBtn);
-            }
-
-            row.appendChild(nameCell);
-            row.appendChild(conditionCell);
-            row.appendChild(secDepoCell);
-            row.appendChild(noteCell);
-            row.appendChild(borrowFeeCell);
-            row.appendChild(statusCell);
-            row.appendChild(actionsCell);
-
-            tbody.appendChild(row);
         }
     } catch (error) {
         console.log("getAllUserItems error:", error);

@@ -25,6 +25,38 @@
         <tbody id="owned-items"></tbody>
     </table>
 
+    <h2>Available Items Only:</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Condition</th>
+                <th>Security Deposit</th>
+                <th>Note</th>
+                <th>Borrowing Fee</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="available-owned-items"></tbody>
+    </table>
+
+    <h2>Borrowed Items Only:</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Condition</th>
+                <th>Security Deposit</th>
+                <th>Note</th>
+                <th>Borrowing Fee</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="borrowed-owned-items"></tbody>
+    </table>
+
     <div id="return-item-modal" class="modal">
         <div class="modal-content">
             <h2>Return Item</h2>
@@ -129,6 +161,7 @@
     <button onclick="window.location.href='profile.html'">Profile</button>
     <button onclick="window.location.href='my-items.html'">My Items</button>
     <button onclick="window.location.href='add-item.html'">Add Item</button>
+    <button onclick="window.location.href='dashboard.html'">Home</button>
 
     <script src="js/my-items.js"></script>
 </body>
