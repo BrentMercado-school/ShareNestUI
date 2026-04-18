@@ -32,9 +32,9 @@ async function getCategories() {
 function resetAddItemForm() {
     addItemForm.reset();
 
-    const statusInput = document.getElementById("item-status");
-    if (statusInput) {
-        statusInput.value = "AVAILABLE";
+    const borrowingFeeInput = document.getElementById("item-borrowing-fee");
+    if (borrowingFeeInput) {
+        borrowingFeeInput.value = 50;
     }
 }
 
@@ -72,7 +72,7 @@ if (addItemForm) {
         const condition = document.getElementById("item-condition").value;
         const security_deposit = document.getElementById("item-security-deposit").value;
         const note = document.getElementById("item-note").value;
-        const borrowingFee = document.getElementById("item-borrowing-fee").value;
+        const borrowingFee = 20;
 
         try {
             const response = await fetch(API_URL + "items/create/", {
