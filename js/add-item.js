@@ -11,6 +11,7 @@ async function getCategories() {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include"
         });
 
         const data = await response.json();
@@ -28,9 +29,19 @@ async function getCategories() {
     }
 }
 
+function resetAddItemForm() {
+    addItemForm.reset();
+
+    const statusInput = document.getElementById("item-status");
+    if (statusInput) {
+        statusInput.value = "AVAILABLE";
+    }
+}
+
 if (openAddItemModalBtn && addItemModal) {
     openAddItemModalBtn.addEventListener("click", async () => {
         await getCategories();
+        resetAddItemForm();
         addItemModal.classList.add("show");
     });
 }
@@ -38,6 +49,7 @@ if (openAddItemModalBtn && addItemModal) {
 if (closeAddItemModalBtn && addItemModal) {
     closeAddItemModalBtn.addEventListener("click", () => {
         addItemModal.classList.remove("show");
+        resetAddItemForm();
     });
 }
 
@@ -45,6 +57,7 @@ if (addItemModal) {
     addItemModal.addEventListener("click", (e) => {
         if (e.target === addItemModal) {
             addItemModal.classList.remove("show");
+            resetAddItemForm();
         }
     });
 }
@@ -60,7 +73,6 @@ if (addItemForm) {
         const security_deposit = document.getElementById("item-security-deposit").value;
         const note = document.getElementById("item-note").value;
         const borrowingFee = document.getElementById("item-borrowing-fee").value;
-        const status = document.getElementById("item-status").value;
 
         try {
             const response = await fetch(API_URL + "items/create/", {
@@ -76,8 +88,7 @@ if (addItemForm) {
                     condition,
                     security_deposit,
                     note,
-                    borrowingFee,
-                    status
+                    borrowingFee
                 })
             });
 
@@ -85,7 +96,7 @@ if (addItemForm) {
 
             if (response.ok) {
                 alert("Item added successfully.");
-                addItemForm.reset();
+                resetAddItemForm();
                 addItemModal.classList.remove("show");
 
                 if (typeof getAllUserItems === "function") {
