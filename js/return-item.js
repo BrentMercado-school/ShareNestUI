@@ -6,12 +6,10 @@ let selectedReturnItemId = null;
 
 function openReturnItemModal(item) {
     selectedReturnItemId = item.id;
-    returnItemModal.classList.add("show");
 }
 
 if (closeReturnItemModalBtn && returnItemModal) {
     closeReturnItemModalBtn.addEventListener("click", () => {
-        returnItemModal.classList.remove("show");
         returnItemForm.reset();
         selectedReturnItemId = null;
     });
