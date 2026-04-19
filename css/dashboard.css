@@ -1,0 +1,298 @@
+    /* =========================
+    RESET
+    ========================= */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        background: #f4f4f4;
+    }
+
+    /* =========================
+    LAYOUT
+    ========================= */
+    .layout {
+        display: flex;
+        min-height: 100vh; /* KEY */
+    }
+
+    /* =========================
+    SIDEBAR
+    ========================= */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: #4e7d5a;
+        color: white;
+        padding: 25px;
+
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        overflow-y: auto;
+    }
+
+    .logo {
+        margin-bottom: 30px;
+    }
+
+    .sidebar nav a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        transition: 0.2s;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+        background: #3c6448;
+    }
+
+    /* =========================
+    MAIN (CENTERED)
+    ========================= */
+    .main {
+        margin-left: 240px;
+        padding: 30px;
+    }
+
+    /* CONTAINER */
+    .container {
+        width: 100%;
+        margin: auto;
+    }
+
+    .layout {
+         display: block;
+         min-height: 100vh; /* IMPORTANT */
+    }
+
+    /* =========================
+    NAVBAR
+    ========================= */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .user {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        background: #4e7d5a;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        font-weight: bold;
+    }
+
+    /* =========================
+    SEARCH
+    ========================= */
+    .search-box {
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 14px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .search-box input {
+        border: none;
+        outline: none;
+        margin-left: 10px;
+        width: 100%;
+        font-size: 0.95rem;
+    }
+
+    /* =========================
+    CATEGORY BUTTONS
+    ========================= */
+    .categories {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .categories button {
+        background: #4e7d5a;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .categories button:hover {
+        background: #3c6448;
+    }
+
+    /* =========================
+    SECTION GROUPING
+    ========================= */
+    .section {
+        margin-bottom: 30px;
+    }
+
+    h3 {
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    /* =========================
+    GRID (BALANCED)
+    ========================= */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    /* =========================
+    CARD
+    ========================= */
+    .card {
+        background: white;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        transition: 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+    }
+
+    /* IMAGE PLACEHOLDER */
+    .card-img {
+        height: 160px;
+        background: linear-gradient(135deg, #dcdcdc, #cfcfcf);
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
+
+    /* CARD BODY */
+    .card-body h4 {
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+
+    .owner {
+        font-size: 0.85rem;
+        color: #777;
+        margin-bottom: 6px;
+    }
+
+    /* STATUS */
+    .available {
+        display: inline-block;
+        background: #e6f4ea;
+        color: #2e7d32;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .borrowed {
+        display: inline-block;
+        background: #fdecea;
+        color: #c62828;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    /* BUTTON */
+    button {
+        background: #4e7d5a;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #3c6448;
+    }
+
+    /* =========================
+    FLOAT BUTTON
+    ========================= */
+    .fab {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        background: #4e7d5a;
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        font-size: 24px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+
+    /* =========================
+    MODAL
+    ========================= */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        width: 450px;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
