@@ -1,12 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="css/styel.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShareNest Dashboard</title>
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<!-- CSS -->
+<link rel="stylesheet" href="css/dashboard.css">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
+
 <body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">ShareNest</h2>
+
+        <nav>
+            <a href="dashboard.html" class="active">
+                <i class="fa fa-home"></i> Home
+            </a>
+            <a href="my-items.html">
+                <i class="fa fa-box"></i> My Items
+            </a>
+            <a href="borrow-requests.html">
+                <i class="fa fa-file"></i> Requests
+            </a>
+            <a href="profile.html">
+                <i class="fa fa-user"></i> Profile
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+            <!-- NAVBAR -->
+            <div class="navbar">
+                <div class="user">
+                    <div class="avatar">DM</div>
+                    <div>
+                        <p>Welcome</p>
+                        <h3 id="username">User</h3>
+                    </div>
+                </div>
+
+                <button id="logout-btn">
+                    <i class="fa fa-sign-out"></i>
+                </button>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search items...">
+            </div>
+
+            <!-- CATEGORY -->
+            <div class="categories">
+                <button>All</button>
+                <button>Appliances</button>
+                <button>Tech</button>
+                <button>Sports</button>
+            </div>
+
+            <!-- LATEST ITEMS -->
+            <div class="section">
+                <h3>Latest Items</h3>
+                <div class="grid" id="latest-items"></div>
+            </div>
+
+            <!-- ALL ITEMS -->
+            <div class="section">
+                <h3>All Items</h3>
+                <div class="grid" id="items"></div>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+<!-- FLOAT BUTTON -->
+<button id="open-add-item-modal" class="fab">
+    <i class="fa fa-plus"></i>
+</button>
+
+<!-- MODAL -->
+<div id="add-item-modal" class="modal">
+    <div class="modal-content">
+
+        <h2>Add Item</h2>
+
+        <form id="add-item-form">
+            <input type="text" id="item-name" placeholder="Name" required>
+            <input type="text" id="item-description" placeholder="Description">
+            <input type="text" id="item-condition" placeholder="Condition">
+            <input type="number" id="item-security-deposit" placeholder="Deposit">
+            <textarea id="item-note" placeholder="Note"></textarea>
+            <input type="number" id="item-borrowing-fee" value="50" readonly>
+
+            <div class="actions">
+                <button type="button" id="close-add-item-modal">Cancel</button>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="js/current-user.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/add-item.js"></script>
+<script src="js/logout.js"></script>
+
+</body>
+</html>
+
+
+
+<!-- <body>
 
     <button id="logout-btn">Logout</button>
     <button onclick="window.location.href='my-borrow-requests.html'">My Borrow Requests</button>
@@ -123,4 +245,4 @@
     <script src="js/delete-item.js"></script>
     <script src="js/return-item.js"></script>
 </body>
-</html>
+</html>  -->
