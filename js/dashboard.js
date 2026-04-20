@@ -46,9 +46,14 @@ function createCard(item) {
     `;
 }
 
-/* VIEW ITEM (cleaner than inline href) */
+/* VIEW ITEM */
 function viewItem(id) {
     window.location.href = `item-details.html?id=${id}`;
+}
+
+/* 🔥 NEW FUNCTION (IMPORTANT) */
+function goToCategory(category) {
+    window.location.href = `browse-items.html?category=${category}`;
 }
 
 /* ALL ITEMS */
@@ -99,15 +104,31 @@ async function getLatestItems() {
     }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("search-input");
+
+    if (searchInput) {
+        searchInput.addEventListener("focus", () => {
+            const value = searchInput.value.trim();
+
+            if (value) {
+                window.location.href = `browse-items.html?category=all&search=${encodeURIComponent(value)}`;
+            } else {
+                window.location.href = "browse-items.html?category=all";
+            }
+        });
+    }
+});
+
+
 /* LOAD */
 getAllItems();
 getLatestItems();
 
-/* OPTIONAL (only if you actually have this function) */
+/* OPTIONAL */
 if (typeof getAllUserItems === "function") {
     getAllUserItems();
 }
-
 
 // function formatDate(dateString) {
 //     if (!dateString) return "N/A";

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse Items</title>
+
+<!-- FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<!-- FIXED CSS PATH -->
+<link rel="stylesheet" href="./css/dashboard.css">
+
+<!-- ICONS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="dashboard.html" class="logo">ShareNest</a>
+
+        <nav>
+            <a href="dashboard.html">
+                <i class="fa fa-home"></i> Home
+            </a>
+            <a href="my-items.html">
+                <i class="fa fa-box"></i> My Items
+            </a>
+            <a href="borrow-requests.html">
+                <i class="fa fa-file"></i> Requests
+            </a>
+            <a href="profile.html">
+                <i class="fa fa-user"></i> Profile
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- NAVBAR -->
+        <div class="navbar">
+            <div class="user">
+                <div class="avatar">DM</div>
+                <div>
+                    <p>Browse</p>
+                    <h3 id="browse-title">All Items</h3>
+                </div>
+            </div>
+
+            <button onclick="window.location.href='dashboard.html'">
+                <i class="fa fa-arrow-left"></i>
+            </button>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-box">
+            <i class="fa fa-search"></i>
+            <input type="text" id="search-input" placeholder="Search in this category...">
+        </div>
+
+        <!-- CATEGORY -->
+        <div class="categories">
+            <button onclick="goToCategory('all')">All</button>
+            <button onclick="goToCategory('sports')">Sports</button>
+            <button onclick="goToCategory('electronics')">Tech</button>
+            <button onclick="goToCategory('books')">Books</button>
+            <button onclick="goToCategory('music')">Music</button>
+            <button onclick="goToCategory('outdoor')">Outdoor</button>
+            <button onclick="goToCategory('appliance')">Appliances</button>
+        </div>
+
+        <!-- ITEMS -->
+        <div class="section">
+            <h3 id="browse-description">Display all items</h3>
+            <div class="grid" id="browse-items"></div>
+        </div>
+
+    </main>
+
+</div>
+
+<script src="/ShareNestUI/js/browse-items.js"></script>
+
+</body>
+</html>

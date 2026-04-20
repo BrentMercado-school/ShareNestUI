@@ -1,0 +1,164 @@
+    /* RESET */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* BODY - MOVING GRADIENT */
+    body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+
+        background: linear-gradient(270deg, #4e7d5a, #3c6448, #5a8f6b);
+        background-size: 400% 400%;
+        animation: gradientMove 10s ease infinite;
+    }
+
+    /* CONTAINER */
+    .home-container {
+        text-align: center;
+        position: relative;
+    }
+
+    /* GLOW EFFECT BEHIND TITLE */
+    .home-container::before {
+        content: "";
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+        filter: blur(60px);
+        z-index: -1;
+    }
+
+    /* TITLE */
+    h1 {
+        color: white;
+        font-size: 3.5rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+
+        animation: fadeUp 0.8s ease;
+    }
+
+    /* DIVIDER */
+    .divider {
+        width: 200px;
+        height: 3px;
+        background: rgba(255,255,255,0.4);
+        margin: 15px auto 40px;
+        border-radius: 10px;
+
+        animation: fadeUp 1s ease;
+    }
+
+    /* BUTTONS */
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+
+        animation: fadeUp 1.2s ease;
+    }
+
+    /* BUTTON BASE */
+    .btn {
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        width: 260px;
+        padding: 16px;
+        border-radius: 16px;
+        font-size: 1.05rem;
+        font-weight: 500;
+        transition: all 0.25s ease;
+    }
+
+    /* RIPPLE EFFECT */
+    .btn::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        background: rgba(255,255,255,0.4);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+        opacity: 0;
+    }
+
+    .btn:active::after {
+        width: 300px;
+        height: 300px;
+        opacity: 1;
+        transition: 0.4s ease;
+    }
+
+    /* PRIMARY */
+    .primary {
+        background: #2f5d44;
+        color: white;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+
+    .primary:hover {
+        transform: translateY(-3px);
+        background: #244a36;
+    }
+
+    /* SECONDARY */
+    .secondary {
+        background: white;
+        color: #2f5d44;
+    }
+
+    .secondary:hover {
+        transform: translateY(-3px);
+        background: #f2f2f2;
+    }
+
+    /* FOOTER */
+    .footer-text {
+        position: absolute;
+        bottom: -80px;
+        width: 100%;
+        text-align: center;
+        color: rgba(255,255,255,0.8);
+        font-size: 0.9rem;
+
+        animation: fadeIn 2s ease;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* MOVING GRADIENT */
+    @keyframes gradientMove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
