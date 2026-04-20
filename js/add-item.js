@@ -99,42 +99,44 @@ function hideToast() {
 
 if (addItemForm) {
     addItemForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
         const name = document.getElementById("item-name").value;
-        const category = parseInt(document.getElementById("item-category").value);
+        const category = document.getElementById("item-category").value;
         const description = document.getElementById("item-description").value;
         const condition = document.getElementById("item-condition").value;
-        const security_deposit = parseFloat(document.getElementById("item-security-deposit").value);
+        const security_deposit = document.getElementById("item-security-deposit").value;
         const note = document.getElementById("item-note").value;
-        const borrowingFee = 50;
+        const borrowingFee = 20;
+
+        // ✅ CREATE FORMDATA
+        const formData = new FormData();
+
+        formData.append("name", name);
+        formData.append("category", category);
+        formData.append("description", description);
+        formData.append("condition", condition);
+        formData.append("security_deposit", security_deposit);
+        formData.append("note", note);
+        formData.append("borrowingFee", borrowingFee);
+
+        // 🔥 ADD IMAGE
+        const imageInput = document.getElementById("item-image");
+        if (imageInput.files.length > 0) {
+            formData.append("image", imageInput.files[0]);
+        }
 
         try {
             const response = await fetch(API_URL + "items/create/", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
                 credentials: "include",
-                body: JSON.stringify({
-                    name,
-                    category,
-                    description,
-                    condition,
-                    security_deposit,
-                    note,
-                    borrowingFee   // 🔥 FIXED
-                })
+                body: formData   // ✅ IMPORTANT
             });
 
             const data = await response.json();
 
-            console.log("RESPONSE:", data); // 🔥 DEBUG
-
             if (response.ok) {
-                showToast("Item added successfully!", "success");
-
-                resetAddItemForm();
+                alert("Item added successfully.");
                 addItemModal.classList.remove("show");
 
                 if (typeof getAllUserItems === "function") {
@@ -142,7 +144,8 @@ if (addItemForm) {
                 }
 
             } else {
-                showToast(data.message || data.detail || "Failed to add item.", "error");
+                alert(data.message || data.detail || "Failed to add item.");
+                console.log(data);
             }
 
         } catch (error) {

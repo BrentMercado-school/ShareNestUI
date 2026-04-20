@@ -126,6 +126,42 @@
         font-weight: bold;
     }
 
+    .avatar-circle {
+    width: 60px;              /* 🔥 bigger */
+    height: 60px;
+    border-radius: 50%;
+    background: #5a7d5a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    }
+
+    /* IMAGE inside */
+    .avatar-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    /* INITIALS */
+    .avatar-circle span {
+        font-size: 18px;
+    }
+
+    /* HOVER EFFECT */
+    .avatar-circle:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+
+    
     /* =========================
     SEARCH
     ========================= */
@@ -225,9 +261,19 @@
     /* IMAGE PLACEHOLDER */
     .card-img {
         height: 160px;
-        background: linear-gradient(135deg, #dcdcdc, #cfcfcf);
         border-radius: 10px;
         margin-bottom: 12px;
+
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        background-color: #e6e6e6;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover .card-img {
+        transform: scale(1.05);
     }
 
     /* CARD BODY */

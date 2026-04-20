@@ -42,10 +42,18 @@ function highlightText(text, query) {
 }
 
 /* CARD */
-function createCard(item) {
+function createCard(item, searchValue) {
+
+    let imageUrl = "./images/default-item.png";
+
+    if (item.images && item.images.length > 0 && item.images[0].image) {
+        imageUrl = item.images[0].image; // ✅ NO base URL
+    }
+
     return `
         <div class="card">
-            <div class="card-img"></div>
+
+            <div class="card-img" style="background-image: url('${imageUrl}')"></div>
 
             <div class="card-body">
                 <h4>${highlightText(item.name || "No Name", currentSearch)}</h4>
@@ -62,6 +70,7 @@ function createCard(item) {
                     View Details
                 </button>
             </div>
+
         </div>
     `;
 }
@@ -122,10 +131,47 @@ function renderItems(items) {
 
     let html = "";
     items.forEach(item => {
-        html += createCard(item);
+        html += createCard(item, searchValue);
     });
 
     container.innerHTML = html;
+}
+
+function setAvatar(elementId, user) {
+    const el = document.getElementById(elementId);
+
+    if (!el) return;
+
+    if (user.image) {
+        el.innerHTML = `<img src="http://127.0.0.1:8000${user.image}" />`;
+    } else {
+        const initials = user.name
+            ? user.name.split(" ").map(n => n[0]).join("").toUpperCase()
+            : "U";
+
+        el.innerHTML = `<span>${initials}</span>`;
+    }
+
+    // click → profile
+    el.addEventListener("click", () => {
+        window.location.href = "profile.html";
+    });
+}
+
+async function loadUserAvatar() {
+    try {
+        const res = await fetch(API_URL + "users/me/", {
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        setAvatar("dashboard-avatar", data);
+        setAvatar("browse-avatar", data); // for category page
+
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -207,6 +253,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 });
+
+loadUserAvatar();
 
 // const API_URL = "http://127.0.0.1:8000/api/";
 

@@ -18,7 +18,6 @@ function populateEditProfileForm(profile) {
     document.getElementById("edit-profile-email").value = profile.email || "";
     document.getElementById("edit-profile-address").value = profile.address || "";
     document.getElementById("edit-profile-contact-number").value = profile.contactNumber || "";
-    document.getElementById("edit-profile-image-url").value = profile.imageUrl || "";
 }
 
 function resetEditProfileForm() {
@@ -39,13 +38,20 @@ async function getCurrentUserProfile() {
         console.log("Profile:", data);
 
         if (response.ok) {
-            currentProfileData = {
-                name: data.name || "",
-                email: data.email || "",
-                address: data.address || "",
-                contactNumber: data.contactNumber || "",
-                imageUrl: data.imageUrl || ""
-            };
+        currentProfileData = {
+            name: data.name || "",
+            email: data.email || "",
+            address: data.address || "",
+            contactNumber: data.contactNumber || "",
+        };
+
+        const profileImg = document.getElementById("profile-avatar");
+
+        if (profileImg) {
+            profileImg.src = data.image
+                ? "http://127.0.0.1:8000" + data.image
+                : "./images/default-profile.png";
+        }
 
             document.getElementById("profile-name").textContent = data.name || "N/A";
             document.getElementById("profile-email").textContent = data.email || "N/A";
@@ -54,7 +60,9 @@ async function getCurrentUserProfile() {
             document.getElementById("profile-email-details").textContent = data.email || "No email added";
 
             if (profileAvatar) {
-                profileAvatar.src = data.imageUrl || DEFAULT_PROFILE_IMAGE;
+                profileAvatar.src = data.image
+                    ? "http://127.0.0.1:8000" + data.image
+                    : DEFAULT_PROFILE_IMAGE;
             }
 
             populateEditProfileForm(currentProfileData);
@@ -107,26 +115,28 @@ if (editProfileForm) {
     editProfileForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const name = document.getElementById("edit-profile-name").value;
-        const email = document.getElementById("edit-profile-email").value;
-        const address = document.getElementById("edit-profile-address").value;
-        const contactNumber = document.getElementById("edit-profile-contact-number").value;
-        const imageUrl = document.getElementById("edit-profile-image-url").value;
-
         try {
+            const name = document.getElementById("edit-profile-name").value;
+            const email = document.getElementById("edit-profile-email").value;
+            const address = document.getElementById("edit-profile-address").value;
+            const contactNumber = document.getElementById("edit-profile-contact-number").value;
+
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("email", email);
+            formData.append("address", address);
+            formData.append("contactNumber", contactNumber);
+
+            // 👇 image
+            const imageInput = document.getElementById("edit-profile-image");
+            if (imageInput.files[0]) {
+                formData.append("image", imageInput.files[0]);
+            }
+
             const response = await fetch(API_URL + "users/me/update/", {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
                 credentials: "include",
-                body: JSON.stringify({
-                    name,
-                    email,
-                    address,
-                    contactNumber,
-                    imageUrl
-                })
+                body: formData
             });
 
             const data = await response.json();
@@ -151,6 +161,7 @@ if (editProfileForm) {
 
                 showToast(errorMessage, "error");
             }
+
         } catch (error) {
             console.log(error);
             showToast("Something went wrong.", "error");
@@ -193,4 +204,6 @@ function hideToast() {
     }
 }
 
-getCurrentUserProfile();    
+document.addEventListener("DOMContentLoaded", () => {
+    getCurrentUserProfile();
+});
