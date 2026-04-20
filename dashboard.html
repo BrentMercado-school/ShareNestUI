@@ -1,47 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShareNest Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareNest Dashboard</title>
 
-<!-- Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-<!-- CSS -->
-<link rel="stylesheet" href="css/dashboard.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/dashboard.css">
 
-<!-- Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
+    <div class="layout">
 
-<div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <a href="home.html" class="logo">ShareNest</a>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <a href="home.html" class="logo">ShareNest</a>
+            <nav>
+                <a href="dashboard.html" class="active">
+                    <i class="fa fa-home"></i> Home
+                </a>
+                <a href="my-items.html">
+                    <i class="fa fa-box"></i> My Items
+                </a>
+                <a href="borrow-requests.html">
+                    <i class="fa fa-file"></i> Requests
+                </a>
+                <a href="profile.html">
+                    <i class="fa fa-user"></i> Profile
+                </a>
+            </nav>
+        </aside>
 
-        <nav>
-            <a href="dashboard.html" class="active">
-                <i class="fa fa-home"></i> Home
-            </a>
-            <a href="my-items.html">
-                <i class="fa fa-box"></i> My Items
-            </a>
-            <a href="borrow-requests.html">
-                <i class="fa fa-file"></i> Requests
-            </a>
-            <a href="profile.html">
-                <i class="fa fa-user"></i> Profile
-            </a>
-        </nav>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
+        <!-- MAIN -->
+        <main class="main">
 
             <!-- NAVBAR -->
             <div class="navbar">
@@ -52,10 +50,6 @@
                         <h3 id="username">User</h3>
                     </div>
                 </div>
-
-                <button id="logout-btn">
-                    <i class="fa fa-sign-out"></i>
-                </button>
             </div>
 
             <!-- SEARCH -->
@@ -66,11 +60,11 @@
 
             <!-- CATEGORY -->
             <div class="categories">
-            <button onclick="goToCategory('all')">All</button>
-            <button onclick="goToCategory('appliance')">Appliances</button>
-            <button onclick="goToCategory('electronics')">Tech</button>
-            <button onclick="goToCategory('sports')">Sports</button>
-        </div>
+                <button onclick="goToCategory('all')">All</button>
+                <button onclick="goToCategory('appliance')">Appliances</button>
+                <button onclick="goToCategory('electronics')">Tech</button>
+                <button onclick="goToCategory('sports')">Sports</button>
+            </div>
 
             <!-- LATEST ITEMS -->
             <div class="section">
@@ -84,95 +78,186 @@
                 <div class="grid" id="items"></div>
             </div>
 
-        </div>
-    </main>
-
-</div>
-
-<!-- FLOAT BUTTON -->
-<button id="open-add-item-modal" class="fab">
-    <i class="fa fa-plus"></i>
-</button>
-
-<!-- MODAL -->
-<div id="add-item-modal" class="modal">
-    <div class="modal-content">
-
-    <form id="add-item-form">
-
-    <h2>Add Item</h2>
-
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" id="item-name" required>
-            </div>
-
-            <div class="form-group">
-                <label>Category</label>
-                <select id="item-category" required></select>
-            </div>
-
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="item-description"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Condition</label>
-                <input type="text" id="item-condition">
-            </div>
-
-            <label>Image</label>
-            <input type="file" id="item-image" accept="image/*">
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Deposit</label>
-                    <input type="number" id="item-security-deposit">
-                </div>
-
-                <div class="form-group">
-                    <label>Borrowing Fee</label>
-                    <input type="number" id="item-borrowing-fee" value="50" readonly>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Note</label>
-                <textarea id="item-note"></textarea>
-            </div>
-
-            <div class="actions">
-                <button type="button" id="close-add-item-modal" class="btn-cancel">Cancel</button>
-                <button type="submit" class="btn-primary">Save</button>
-            </div>
-
-        </form>
-
-    </div>
-</div>
-
-<div id="toast-message" class="toast-message">
-    <div id="toast-icon" class="toast-icon">
-        <i class="fa-solid fa-check"></i>
+        </main>
     </div>
 
-    <div class="toast-text">
-        <strong id="toast-title">Success</strong>
-        <p id="toast-text">Profile updated successfully.</p>
-    </div>
-
-    <button type="button" class="toast-close" onclick="hideToast()">
-        <i class="fa-solid fa-xmark"></i>
+    <!-- FLOAT BUTTON -->
+    <button id="open-add-item-modal" class="fab">
+        <i class="fa fa-plus"></i>
     </button>
-</div>
 
-<!-- SCRIPTS -->
-<script src="js/current-user.js"></script>
-<script src="js/dashboard.js"></script>
-<script src="js/add-item.js"></script>
-<script src="js/logout.js"></script>
+    <!-- ADD ITEM MODAL -->
+    <div id="add-item-modal" class="modal">
+        <div class="modal-content">
+            <form id="add-item-form">
+                <h2>Add Item</h2>
 
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="item-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="item-category" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="item-description"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Condition</label>
+                    <input type="text" id="item-condition">
+                </div>
+
+                <div class="form-group">
+                    <label>Image</label>
+                    <input type="file" id="item-image" accept="image/*">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Deposit</label>
+                        <input type="number" id="item-security-deposit">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Borrowing Fee</label>
+                        <input type="number" id="item-borrowing-fee" value="50" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Note</label>
+                    <textarea id="item-note"></textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="button" id="close-add-item-modal" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ITEM DETAILS MODAL -->
+    <div id="item-details-modal" class="modal">
+        <div class="modal-content item-sheet">
+            <div class="item-sheet-hero">
+                <button type="button" id="close-item-details-modal" class="item-sheet-close">
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+
+                <div id="modal-item-image" class="item-sheet-image"></div>
+
+                <div class="item-sheet-price-bar">
+                    Security Deposit: ₱<span id="modal-item-security-deposit">0</span>
+                    |
+                    Borrowing Fee: ₱<span id="modal-item-borrowing-fee">0</span>
+                </div>
+            </div>
+
+            <div class="item-sheet-body">
+                <h2 id="modal-item-name" class="item-sheet-title">N/A</h2>
+
+                <div class="item-sheet-category">
+                    <span id="modal-item-category" class="category-pill">N/A</span>
+                </div>
+
+                <div class="item-sheet-section">
+                    <h3>Description</h3>
+                    <div class="item-sheet-box">
+                        <p id="modal-item-description">N/A</p>
+                    </div>
+                </div>
+
+                <div class="item-sheet-meta-row">
+                    <div class="item-meta-pill">
+                        <span class="meta-label">Condition:</span>
+                        <span id="modal-item-condition">N/A</span>
+                    </div>
+
+                    <div class="item-meta-pill">
+                        <span class="meta-label">Status:</span>
+                        <span id="modal-item-status">N/A</span>
+                    </div>
+
+                    <div class="item-meta-pill">
+                        <span class="meta-label">Owner:</span>
+                        <span id="modal-item-owner">N/A</span>
+                    </div>
+                </div>
+
+                <div class="item-sheet-section">
+                    <h3>Owner's Note</h3>
+                    <div class="item-sheet-box">
+                        <p id="modal-item-note">N/A</p>
+                    </div>
+                </div>
+
+                <div id="borrowed-info-card" class="borrowed-info-card" style="display: none;">
+                    <div class="borrowed-info-icon">
+                        <i class="fa-regular fa-calendar"></i>
+                    </div>
+
+                    <div class="borrowed-info-text">
+                        <span>Expected Return Date</span>
+                        <p id="modal-item-expected-return-date">N/A</p>
+                    </div>
+                </div>
+
+                <div class="borrow-section">
+                    <button id="show-borrow-form-btn" type="button" class="borrow-main-btn">
+                        Borrow
+                    </button>
+
+                    <button id="borrowed-disabled-btn" type="button" class="borrowed-disabled-btn" style="display: none;" disabled>
+                        Currently Borrowed
+                    </button>
+
+                    <form id="borrow-form" class="borrow-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="start-date">Start Date</label>
+                            <input type="date" id="start-date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="return-date">Return Date</label>
+                            <input type="date" id="return-date" required>
+                        </div>
+
+                        <div class="actions">
+                            <button type="button" id="cancel-borrow-form" class="btn-cancel borrow-cancel-btn">Cancel</button>
+                            <button type="submit" class="btn-primary borrow-submit-btn">Submit Borrow Request</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast-message" class="toast-message">
+        <div id="toast-icon" class="toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <div class="toast-text">
+            <strong id="toast-title">Success</strong>
+            <p id="toast-text">Profile updated successfully.</p>
+        </div>
+
+        <button type="button" class="toast-close" onclick="hideToast()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/current-user.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/add-item.js"></script>
+    <script src="js/logout.js"></script>
 </body>
 </html>
-
