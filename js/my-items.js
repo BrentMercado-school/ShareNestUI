@@ -8,6 +8,23 @@ const myItemsList = document.getElementById("my-items-list");
 const myItemsSearch = document.getElementById("my-items-search");
 const myItemsFilterNote = document.getElementById("my-items-filter-note");
 
+const deleteItemModal = document.getElementById("delete-item-modal");
+const deleteItemName = document.getElementById("delete-item-name");
+const cancelDeleteItemBtn = document.getElementById("cancel-delete-item");
+const confirmDeleteItemBtn = document.getElementById("confirm-delete-item");
+
+const returnItemModal = document.getElementById("return-item-modal");
+const cancelReturnBtn = document.getElementById("cancel-return-btn");
+const confirmReturnBtn = document.getElementById("confirm-return-btn");
+const actualReturnDateInput = document.getElementById("actual-return-date");
+const damageFeeInput = document.getElementById("damage-fee");
+
+let selectedReturnItem = null;
+
+const LATE_PENALTY_PER_DAY = 50; 
+
+let pendingDeleteItemId = null;
+
 let ownedItems = [];
 let currentFilter = "all";
 let currentSearch = "";
@@ -16,6 +33,75 @@ let toastTimeout = null;
 /* =========================
    HELPERS
 ========================= */
+function formatLongDate(dateString) {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+
+    return date.toLocaleDateString("en-PH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+}
+
+function getInitials(name = "U") {
+    return name
+        .split(" ")
+        .map(part => part[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+}
+
+function getDaysLate(expectedReturnDate, actualReturnDate) {
+    if (!expectedReturnDate || !actualReturnDate) return 0;
+
+    const expected = new Date(expectedReturnDate);
+    const actual = new Date(actualReturnDate);
+
+    expected.setHours(0, 0, 0, 0);
+    actual.setHours(0, 0, 0, 0);
+
+    const diff = actual - expected;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    return days > 0 ? days : 0;
+}
+
+function updateReturnSummary() {
+    if (!selectedReturnItem) return;
+
+    const securityDeposit =
+        Number(
+            selectedReturnItem.securityDepositSnapshot ??
+            selectedReturnItem.security_deposit ??
+            0
+        );
+
+    const damageFee = Number(damageFeeInput?.value || 0);
+    const actualReturnDate = actualReturnDateInput?.value || "";
+    const expectedReturnDate = selectedReturnItem.expected_return_date;
+
+    const daysLate = getDaysLate(expectedReturnDate, actualReturnDate);
+    const latePenalty = daysLate * LATE_PENALTY_PER_DAY;
+    const refundAmount = Math.max(0, securityDeposit - damageFee - latePenalty);
+
+    document.getElementById("summary-security-deposit").textContent = `₱${formatMoney(securityDeposit)}`;
+    document.getElementById("summary-damage-fee").textContent = `-₱${formatMoney(damageFee)}`;
+    document.getElementById("summary-penalty-label").textContent = `Penalties (${daysLate} day${daysLate !== 1 ? "s" : ""} late)`;
+    document.getElementById("summary-late-penalty").textContent = `-₱${formatMoney(latePenalty)}`;
+    document.getElementById("summary-refund-amount").textContent = `₱${formatMoney(refundAmount)}`;
+
+    return {
+        daysLate,
+        latePenalty,
+        refundAmount,
+        damageFee,
+        actualReturnDate
+    };
+}
+
 function normalizeMediaUrl(url) {
     if (!url) return "";
 
@@ -247,6 +333,9 @@ function createOwnedItemCard(item) {
     const imageUrl = getItemImage(item);
     const isBorrowed = item.status === "BORROWED";
 
+    const showReturnButton = currentFilter === "borrowed" && isBorrowed;
+    const showManageButtons = currentFilter !== "borrowed";
+
     return `
         <article class="my-item-card">
             <div class="my-item-thumb" style="background-image: url('${imageUrl}')"></div>
@@ -261,13 +350,25 @@ function createOwnedItemCard(item) {
                     </div>
 
                     <div class="my-item-actions">
-                        <button type="button" class="my-item-icon-btn" onclick="handleEditItem(${item.id})" aria-label="Edit item">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
+                        ${
+                            showReturnButton
+                                ? `<button type="button" class="my-item-return-btn" onclick="openReturnItemModal(${item.id})">Return</button>`
+                                : ``
+                        }
 
-                        <button type="button" class="my-item-icon-btn delete" onclick="handleDeleteItem(${item.id})" aria-label="Delete item">
-                            <i class="fa-regular fa-trash-can"></i>
-                        </button>
+                        ${
+                            showManageButtons
+                                ? `
+                                    <button type="button" class="my-item-icon-btn" onclick="handleEditItem(${item.id})" aria-label="Edit item">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+
+                                    <button type="button" class="my-item-icon-btn delete" onclick="handleDeleteItem(${item.id})" aria-label="Delete item">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                `
+                                : ``
+                        }
                     </div>
                 </div>
 
@@ -304,6 +405,102 @@ function renderOwnedItems() {
         .map(item => createOwnedItemCard(item))
         .join("");
 }
+function populateReturnModal(item) {
+    selectedReturnItem = item;
+
+    const borrowerName = item.borrower_name || "Unknown Borrower";
+    const borrowerEmail = item.borrower_email || "N/A";
+    const borrowerAddress = item.borrower_address || "N/A";
+    const borrowerImage = item.borrower_image ? normalizeMediaUrl(item.borrower_image) : "";
+
+    const borrowerAvatar = document.getElementById("return-borrower-avatar");
+    if (borrowerAvatar) {
+        if (borrowerImage) {
+            borrowerAvatar.innerHTML = `<img src="${borrowerImage}" alt="${borrowerName}">`;
+        } else {
+            borrowerAvatar.textContent = getInitials(borrowerName);
+        }
+    }
+
+    document.getElementById("return-borrower-name").textContent = borrowerName;
+    document.getElementById("return-borrower-email").textContent = borrowerEmail;
+    document.getElementById("return-borrower-address-text").textContent = borrowerAddress;
+
+    document.getElementById("return-item-name").textContent = item.name || "Item";
+    document.getElementById("return-item-category").textContent = item.category_name || "Category";
+    document.getElementById("return-item-condition").textContent = `Condition: ${item.condition || "N/A"}`;
+    document.getElementById("return-item-security-deposit-text").textContent =
+        `Security Deposit: ₱${formatMoney(item.securityDepositSnapshot ?? item.security_deposit ?? 0)}`;
+
+    const returnItemImage = document.getElementById("return-item-image");
+    if (returnItemImage) {
+        returnItemImage.style.backgroundImage = `url('${getItemImage(item)}')`;
+    }
+
+    document.getElementById("return-start-date").textContent =
+        formatLongDate(item.startDate || item.start_date || item.borrow_start_date || "");
+    document.getElementById("return-expected-date").textContent =
+        formatLongDate(item.expected_return_date || "");
+    document.getElementById("return-borrowing-fee").textContent =
+        `₱${formatMoney(item.borrowingFeeSnapshot ?? item.borrowingFee ?? 0)}`;
+    document.getElementById("return-security-deposit").textContent =
+        `₱${formatMoney(item.securityDepositSnapshot ?? item.security_deposit ?? 0)}`;
+
+    if (actualReturnDateInput) {
+        actualReturnDateInput.value = new Date().toISOString().split("T")[0];
+    }
+
+    if (damageFeeInput) {
+        damageFeeInput.value = "";
+    }
+
+    updateReturnSummary();
+}
+
+function openReturnItemModal(itemId) {
+    const item = ownedItems.find(entry => String(entry.id) === String(itemId));
+
+    if (!item || !returnItemModal) return;
+
+    populateReturnModal(item);
+    returnItemModal.classList.add("show");
+}
+
+function closeReturnItemModal() {
+    selectedReturnItem = null;
+
+    if (returnItemModal) {
+        returnItemModal.classList.remove("show");
+    }
+}
+
+window.openReturnItemModal = openReturnItemModal;
+
+if (cancelReturnBtn) {
+    cancelReturnBtn.addEventListener("click", closeReturnItemModal);
+}
+
+if (returnItemModal) {
+    returnItemModal.addEventListener("click", (e) => {
+        if (e.target === returnItemModal) {
+            closeReturnItemModal();
+        }
+    });
+}
+
+if (actualReturnDateInput) {
+    actualReturnDateInput.addEventListener("input", updateReturnSummary);
+}
+
+if (damageFeeInput) {
+    damageFeeInput.addEventListener("input", updateReturnSummary);
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && returnItemModal?.classList.contains("show")) {
+        closeReturnItemModal();
+    }
+});
 
 /* =========================
    EDIT / DELETE WRAPPERS
@@ -322,18 +519,31 @@ function handleEditItem(itemId) {
     console.warn("No edit handler found for item:", itemId);
 }
 
+
+function openDeleteItemModal(itemId) {
+    const item = ownedItems.find(entry => String(entry.id) === String(itemId));
+
+    if (!item || !deleteItemModal || !deleteItemName) return;
+
+    pendingDeleteItemId = item.id;
+    deleteItemName.textContent = `"${item.name || "Item"}"`;
+    deleteItemModal.classList.add("show");
+}
+
+function closeDeleteItemModal() {
+    pendingDeleteItemId = null;
+
+    if (deleteItemModal) {
+        deleteItemModal.classList.remove("show");
+    }
+
+    if (deleteItemName) {
+        deleteItemName.textContent = `"Item"`;
+    }
+}
+
 function handleDeleteItem(itemId) {
-    if (typeof window.deleteItem === "function") {
-        window.deleteItem(itemId);
-        return;
-    }
-
-    if (typeof window.removeItem === "function") {
-        window.removeItem(itemId);
-        return;
-    }
-
-    console.warn("No delete handler found for item:", itemId);
+    openDeleteItemModal(itemId);
 }
 
 window.handleEditItem = handleEditItem;
@@ -367,6 +577,125 @@ async function loadOwnedItems() {
 }
 
 window.getAllUserItems = loadOwnedItems;
+
+if (cancelDeleteItemBtn) {
+    cancelDeleteItemBtn.addEventListener("click", closeDeleteItemModal);
+}
+
+if (deleteItemModal) {
+    deleteItemModal.addEventListener("click", (e) => {
+        if (e.target === deleteItemModal) {
+            closeDeleteItemModal();
+        }
+    });
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && deleteItemModal?.classList.contains("show")) {
+        closeDeleteItemModal();
+    }
+});
+
+if (confirmDeleteItemBtn) {
+    confirmDeleteItemBtn.addEventListener("click", async () => {
+        if (!pendingDeleteItemId) return;
+
+        try {
+            const response = await fetch(
+                MY_ITEMS_API_URL + `items/${pendingDeleteItemId}/delete/`,
+                {
+                    method: "DELETE",
+                    credentials: "include"
+                }
+            );
+
+            let data = {};
+            const rawText = await response.text();
+
+            try {
+                data = rawText ? JSON.parse(rawText) : {};
+            } catch {
+                data = {};
+            }
+
+            if (response.ok) {
+                closeDeleteItemModal();
+                showToast(data.message || "Item deleted successfully.", "success");
+                await loadOwnedItems();
+            } else {
+                closeDeleteItemModal();
+                showToast(data.detail || data.message || "Failed to delete item.", "error");
+            }
+        } catch (error) {
+            console.error("Delete item error:", error);
+            closeDeleteItemModal();
+            showToast("Something went wrong.", "error");
+        }
+    });
+}
+
+if (confirmReturnBtn) {
+    confirmReturnBtn.addEventListener("click", async () => {
+        if (!selectedReturnItem) {
+            showToast("No return item selected.", "error");
+            return;
+        }
+
+        const summary = updateReturnSummary();
+
+        if (!summary || !summary.actualReturnDate) {
+            showToast("Please select the actual return date.", "error");
+            return;
+        }
+
+        try {
+            // use this if your backend route is items/<id>/return/
+            const endpoint = `${MY_ITEMS_API_URL}items/${selectedReturnItem.id}/return/`;
+
+            console.log("selectedReturnItem:", selectedReturnItem);
+            console.log("return endpoint:", endpoint);
+
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    actualReturnDate: summary.actualReturnDate,
+                    damageFee: Number(summary.damageFee || 0),
+                    latePenaltyFee: Number(summary.latePenalty || 0),
+                    refundAmount: Number(summary.refundAmount || 0)
+                })
+            });
+
+            const rawText = await response.text();
+            console.log("return response status:", response.status);
+            console.log("return response body:", rawText);
+
+            let data = {};
+            try {
+                data = rawText ? JSON.parse(rawText) : {};
+            } catch {
+                data = { detail: rawText || "Non-JSON response from server." };
+            }
+
+            if (response.ok) {
+                closeReturnItemModal();
+                showToast(data.message || "Return processed successfully.", "success");
+                await loadOwnedItems();
+            } else {
+                showToast(
+                    data.detail || data.message || `Failed to process return. (${response.status})`,
+                    "error"
+                );
+            }
+        } catch (error) {
+            console.error("Return item error:", error);
+            showToast("Something went wrong.", "error");
+        }
+    });
+}
 
 /* =========================
    INIT
