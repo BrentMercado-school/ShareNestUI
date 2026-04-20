@@ -1,6 +1,4 @@
-const EDIT_ITEM_API_URL =
-    window.API_URL ||
-    (typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000/api/");
+const EDIT_ITEM_API_URL = window.API_URL || "http://127.0.0.1:8000/api/";
 
 const editItemModal = document.getElementById("edit-item-modal");
 const closeEditItemModalBtn = document.getElementById("close-edit-item-modal");

@@ -1,6 +1,4 @@
-const MY_ITEMS_API_URL =
-    window.API_URL ||
-    (typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000/api/");
+const MY_ITEMS_API_URL = window.API_URL || "http://127.0.0.1:8000/api/";
 
 const MY_ITEMS_BASE_URL = "http://127.0.0.1:8000";
 
@@ -117,8 +115,16 @@ function normalizeMediaUrl(url) {
 }
 
 function getItemImage(item) {
-    if (item?.images && item.images.length > 0 && item.images[0]?.image) {
-        return normalizeMediaUrl(item.images[0].image);
+    if (item?.images && item.images.length > 0) {
+        const primaryImage = item.images.find(img => img.isPrimary && img.image);
+
+        if (primaryImage) {
+            return normalizeMediaUrl(primaryImage.image);
+        }
+
+        if (item.images[0]?.image) {
+            return normalizeMediaUrl(item.images[0].image);
+        }
     }
 
     if (item?.imageUrl) return normalizeMediaUrl(item.imageUrl);
