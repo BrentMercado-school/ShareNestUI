@@ -1,12 +1,27 @@
-const API_URL = "http://127.0.0.1:8000/api/";
+const BROWSE_API_URL =
+    window.API_URL ||
+    (typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:8000/api/");
+
+const BROWSE_BASE_URL = "http://127.0.0.1:8000";
 
 const browseTitle = document.getElementById("browse-title");
 const browseDescription = document.getElementById("browse-description");
 const container = document.getElementById("browse-items");
 const searchInput = document.getElementById("search-input");
 
+const itemDetailsModal = document.getElementById("item-details-modal");
+const closeItemDetailsModalBtn = document.getElementById("close-item-details-modal");
+const showBorrowFormBtn = document.getElementById("show-borrow-form-btn");
+const cancelBorrowFormBtn = document.getElementById("cancel-borrow-form");
+const borrowForm = document.getElementById("borrow-form");
+const borrowedInfoCard = document.getElementById("borrowed-info-card");
+const borrowedDisabledBtn = document.getElementById("borrowed-disabled-btn");
+
 let allItems = [];
 let currentSearch = "";
+let currentCategory = "all";
+let selectedItemId = null;
+let toastTimeout = null;
 
 const CATEGORY_CONFIG = {
     all: {
@@ -14,13 +29,91 @@ const CATEGORY_CONFIG = {
         description: "Display all items",
         endpoint: "items/allitems/dashboard/"
     },
-    sports: { title: "Sports", endpoint: "items/sports/" },
-    electronics: { title: "Tech", endpoint: "items/electronics/" },
-    books: { title: "Books", endpoint: "items/books/" },
-    music: { title: "Music", endpoint: "items/music/" },
-    outdoor: { title: "Outdoor", endpoint: "items/outdoor/" },
-    appliance: { title: "Appliances", endpoint: "items/appliance/" }
+    sports: {
+        title: "Sports",
+        description: "Display sports items",
+        endpoint: "items/sports/"
+    },
+    electronics: {
+        title: "Tech",
+        description: "Display tech items",
+        endpoint: "items/electronics/"
+    },
+    books: {
+        title: "Books",
+        description: "Display book items",
+        endpoint: "items/books/"
+    },
+    music: {
+        title: "Music",
+        description: "Display music items",
+        endpoint: "items/music/"
+    },
+    outdoor: {
+        title: "Outdoor",
+        description: "Display outdoor items",
+        endpoint: "items/outdoor/"
+    },
+    appliance: {
+        title: "Appliances",
+        description: "Display appliance items",
+        endpoint: "items/appliance/"
+    }
 };
+
+/* =========================
+   HELPERS
+========================= */
+function formatDate(dateString) {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+
+    return date.toLocaleDateString("en-PH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+}
+
+function formatDateTime(dateString) {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+
+    return date.toLocaleString("en-PH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+    });
+}
+
+function normalizeMediaUrl(url) {
+    if (!url) return "";
+
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+        return url;
+    }
+
+    if (url.startsWith("/")) {
+        return `${BROWSE_BASE_URL}${url}`;
+    }
+
+    return url;
+}
+
+function getItemImage(item) {
+    if (item?.images && item.images.length > 0 && item.images[0]?.image) {
+        return normalizeMediaUrl(item.images[0].image);
+    }
+
+    if (item?.imageUrl) return normalizeMediaUrl(item.imageUrl);
+    if (item?.image) return normalizeMediaUrl(item.image);
+
+    return "./images/default-item.png";
+}
 
 function highlightText(text, query) {
     if (!query) return text;
@@ -41,18 +134,98 @@ function highlightText(text, query) {
     return highlighted;
 }
 
-/* CARD */
-function createCard(item, searchValue) {
+/* =========================
+   TOAST
+========================= */
+function showToast(message = "Success", type = "success") {
+    const toast = document.getElementById("toast-message");
+    const toastText = document.getElementById("toast-text");
+    const toastTitle = document.getElementById("toast-title");
+    const toastIcon = document.getElementById("toast-icon");
 
-    let imageUrl = "./images/default-item.png";
+    if (!toast || !toastText || !toastTitle || !toastIcon) return;
 
-    if (item.images && item.images.length > 0 && item.images[0].image) {
-        imageUrl = item.images[0].image; // ✅ NO base URL
+    toast.classList.remove("success", "error");
+    toast.classList.add(type);
+
+    if (type === "error") {
+        toastTitle.textContent = "Error";
+        toastIcon.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i>`;
+    } else {
+        toastTitle.textContent = "Success";
+        toastIcon.innerHTML = `<i class="fa-solid fa-check"></i>`;
     }
+
+    toastText.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
+}
+
+function hideToast() {
+    const toast = document.getElementById("toast-message");
+    if (toast) {
+        toast.classList.remove("show");
+    }
+}
+
+window.hideToast = hideToast;
+
+/* =========================
+   USER AVATAR
+========================= */
+function setAvatar(elementId, user) {
+    const el = document.getElementById(elementId);
+
+    if (!el) return;
+
+    if (user.image) {
+        el.innerHTML = `<img src="${normalizeMediaUrl(user.image)}" alt="Profile Image" />`;
+    } else {
+        const initials = user.name
+            ? user.name.split(" ").map(n => n[0]).join("").toUpperCase()
+            : "U";
+
+        el.innerHTML = `<span>${initials}</span>`;
+    }
+
+    el.addEventListener("click", () => {
+        window.location.href = "profile.html";
+    });
+}
+
+async function loadUserAvatar() {
+    try {
+        const res = await fetch(BROWSE_API_URL + "users/me/", {
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("Failed to load browse user:", data);
+            return;
+        }
+
+        setAvatar("browse-avatar", data);
+        setAvatar("dashboard-avatar", data);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+/* =========================
+   CARD
+========================= */
+function createCard(item) {
+    const isBorrowed = item.status === "BORROWED";
+    const imageUrl = getItemImage(item);
 
     return `
         <div class="card">
-
             <div class="card-img" style="background-image: url('${imageUrl}')"></div>
 
             <div class="card-body">
@@ -62,62 +235,21 @@ function createCard(item, searchValue) {
                     <i class="fa fa-user"></i> ${item.owner_name || "Unknown"}
                 </p>
 
-                <p class="${item.status === "AVAILABLE" ? "available" : "borrowed"}">
-                    ${item.status || "N/A"}
-                </p>
+                ${
+                    isBorrowed
+                        ? `<p class="borrowed-until">Borrowed until ${formatDate(item.expected_return_date)}</p>`
+                        : `<p class="available">Available</p>`
+                }
 
-                <button onclick="viewItem(${item.id})">
+                <button onclick="openItemDetailsModal(${item.id})">
                     View Details
                 </button>
             </div>
-
         </div>
     `;
 }
 
-/* NAV */
-function viewItem(id) {
-    window.location.href = `item-details.html?id=${id}`;
-}
-
-function goToCategory(category) {
-    window.location.href = `browse-items.html?category=${category}`;
-}
-
-/* LOAD */
-async function loadCategoryItems(categoryKey) {
-    const config = CATEGORY_CONFIG[categoryKey];
-    if (!config) return;
-
-    browseTitle.textContent = config.title;
-    browseDescription.textContent = config.description || "";
-
-    try {
-        const res = await fetch(API_URL + config.endpoint, {
-            credentials: "include" // 🔥 IMPORTANT FIX
-        });
-
-        const data = await res.json();
-
-        console.log("API DATA:", data);
-
-        if (!res.ok) {
-            container.innerHTML = "<p>Error loading items</p>";
-            return;
-        }
-
-        allItems = data;
-        renderItems(data);
-
-    } catch (err) {
-        console.error(err);
-        container.innerHTML = "<p>Failed to load items</p>";
-    }
-}
-
-/* RENDER */
 function renderItems(items) {
-    const searchInput = document.getElementById("search-input");
     const searchValue = searchInput ? searchInput.value : "";
 
     if (!items.length) {
@@ -131,112 +263,303 @@ function renderItems(items) {
 
     let html = "";
     items.forEach(item => {
-        html += createCard(item, searchValue);
+        html += createCard(item);
     });
 
     container.innerHTML = html;
 }
 
-function setAvatar(elementId, user) {
-    const el = document.getElementById(elementId);
+function filterItems(query) {
+    currentSearch = query.toLowerCase().trim();
 
-    if (!el) return;
-
-    if (user.image) {
-        el.innerHTML = `<img src="http://127.0.0.1:8000${user.image}" />`;
-    } else {
-        const initials = user.name
-            ? user.name.split(" ").map(n => n[0]).join("").toUpperCase()
-            : "U";
-
-        el.innerHTML = `<span>${initials}</span>`;
+    if (!currentSearch) {
+        return allItems;
     }
 
-    // click → profile
-    el.addEventListener("click", () => {
-        window.location.href = "profile.html";
+    const words = currentSearch
+        .split(" ")
+        .filter(word => word.length > 0);
+
+    return allItems.filter(item => {
+        const itemName = item.name?.toLowerCase() || "";
+        return words.some(word => itemName.includes(word));
     });
 }
 
-async function loadUserAvatar() {
+function updateSearchDescription() {
+    if (!browseDescription) return;
+
+    const config = CATEGORY_CONFIG[currentCategory];
+
+    if (currentSearch) {
+        browseDescription.textContent = `Results for "${currentSearch}"`;
+    } else {
+        browseDescription.textContent = config?.description || "Display all items";
+    }
+}
+
+function updateUrlSearch(value) {
+    const params = new URLSearchParams(window.location.search);
+    params.set("category", currentCategory);
+
+    if (value) {
+        params.set("search", value);
+    } else {
+        params.delete("search");
+    }
+
+    window.history.replaceState({}, "", `?${params.toString()}`);
+}
+
+/* =========================
+   NAV
+========================= */
+function goToCategory(category) {
+    window.location.href = `browse-items.html?category=${category}`;
+}
+
+window.goToCategory = goToCategory;
+
+/* =========================
+   LOAD CATEGORY ITEMS
+========================= */
+async function loadCategoryItems(categoryKey) {
+    const config = CATEGORY_CONFIG[categoryKey];
+    if (!config) return;
+
+    currentCategory = categoryKey;
+
+    if (browseTitle) browseTitle.textContent = config.title;
+    if (browseDescription) browseDescription.textContent = config.description || "";
+
     try {
-        const res = await fetch(API_URL + "users/me/", {
+        const res = await fetch(BROWSE_API_URL + config.endpoint, {
             credentials: "include"
         });
 
         const data = await res.json();
 
-        setAvatar("dashboard-avatar", data);
-        setAvatar("browse-avatar", data); // for category page
+        if (!res.ok) {
+            container.innerHTML = "<p>Error loading items</p>";
+            return;
+        }
 
+        allItems = Array.isArray(data) ? data : [];
+        renderItems(allItems);
     } catch (err) {
-        console.log(err);
+        console.error("loadCategoryItems error:", err);
+        container.innerHTML = "<p>Failed to load items</p>";
     }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    const params = new URLSearchParams(window.location.search);
+/* =========================
+   ITEM DETAILS MODAL
+========================= */
+async function openItemDetailsModal(itemId) {
+    selectedItemId = itemId;
 
-    const category = params.get("category") || "all";
-    const search = params.get("search") || ""; // 🔥 FIX HERE
-
-    await loadCategoryItems(category);
-
-    if (search) {
-        browseDescription.textContent = `No results found for "${search}"`;
-    } else {
-        browseDescription.textContent = "Display all items";
+    if (borrowForm) {
+        borrowForm.reset();
+        borrowForm.style.display = "none";
     }
 
-    const searchInput = document.getElementById("search-input");
+    if (borrowedInfoCard) borrowedInfoCard.style.display = "none";
+    if (borrowedDisabledBtn) borrowedDisabledBtn.style.display = "none";
+    if (showBorrowFormBtn) showBorrowFormBtn.style.display = "block";
 
-    if (searchInput) {
-        searchInput.value = search;
+    if (itemDetailsModal) {
+        itemDetailsModal.classList.add("show");
+    }
 
-        // auto focus
-        searchInput.focus();
+    await getItemDetails(itemId);
+}
 
-        // 🔥 APPLY SEARCH FROM URL
-        if (search) {
-            const filtered = allItems.filter(item =>
-                item.name?.toLowerCase().includes(search.toLowerCase())
-            );
+window.openItemDetailsModal = openItemDetailsModal;
 
-            renderItems(filtered);
+function closeItemDetailsModal() {
+    selectedItemId = null;
+
+    if (itemDetailsModal) {
+        itemDetailsModal.classList.remove("show");
+    }
+
+    if (borrowForm) {
+        borrowForm.reset();
+        borrowForm.style.display = "none";
+    }
+
+    if (borrowedInfoCard) borrowedInfoCard.style.display = "none";
+    if (borrowedDisabledBtn) borrowedDisabledBtn.style.display = "none";
+    if (showBorrowFormBtn) showBorrowFormBtn.style.display = "block";
+}
+
+async function getItemDetails(itemId) {
+    try {
+        const response = await fetch(BROWSE_API_URL + `items/${itemId}/`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            showToast(data.detail || "Failed to load item details.", "error");
+            closeItemDetailsModal();
+            return;
         }
 
-        // 🔥 LIVE SEARCH
-        searchInput.addEventListener("input", () => {
-            const value = searchInput.value.toLowerCase();
-            currentSearch = value;
-            const filtered = allItems.filter(item => {
-                const itemName = item.name?.toLowerCase() || "";
+        const modalItemName = document.getElementById("modal-item-name");
+        const modalItemCategory = document.getElementById("modal-item-category");
+        const modalItemDescription = document.getElementById("modal-item-description");
+        const modalItemCondition = document.getElementById("modal-item-condition");
+        const modalItemSecurityDeposit = document.getElementById("modal-item-security-deposit");
+        const modalItemNote = document.getElementById("modal-item-note");
+        const modalItemBorrowingFee = document.getElementById("modal-item-borrowing-fee");
+        const modalItemStatus = document.getElementById("modal-item-status");
+        const modalItemOwner = document.getElementById("modal-item-owner");
+        const modalItemExpectedReturnDate = document.getElementById("modal-item-expected-return-date");
+        const imageBox = document.getElementById("modal-item-image");
 
-                const words = value
-                    .toLowerCase()
-                    .trim()
-                    .split(" ")
-                    .filter(word => word.length > 0); // 🔥 remove empty words
+        if (modalItemName) modalItemName.textContent = data.name || "N/A";
+        if (modalItemCategory) modalItemCategory.textContent = data.category_name || "Uncategorized";
+        if (modalItemDescription) modalItemDescription.textContent = data.description || "No description added.";
+        if (modalItemCondition) modalItemCondition.textContent = data.condition || "N/A";
+        if (modalItemSecurityDeposit) modalItemSecurityDeposit.textContent = data.security_deposit || "0";
+        if (modalItemNote) modalItemNote.textContent = data.note || "No note added.";
+        if (modalItemBorrowingFee) modalItemBorrowingFee.textContent = data.borrowingFee || "0";
+        if (modalItemOwner) modalItemOwner.textContent = data.owner_name || "N/A";
 
-                return words.some(word => itemName.includes(word));
-            });
+        if (modalItemStatus) {
+            modalItemStatus.textContent = data.status || "N/A";
+            modalItemStatus.style.color = data.status === "AVAILABLE" ? "#2e7d32" : "#ea580c";
+            modalItemStatus.style.fontWeight = "700";
+        }
 
-            renderItems(filtered);
+        if (imageBox) {
+            const detailImageUrl = getItemImage(data);
 
-            // 🔥 update URL AFTER render
-            const params = new URLSearchParams(window.location.search);
-
-            if (value) {
-                params.set("search", value);
+            if (detailImageUrl) {
+                imageBox.style.backgroundImage = `url('${detailImageUrl}')`;
             } else {
-                params.delete("search"); // 🔥 remove when empty
+                imageBox.style.backgroundImage =
+                    "linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.08)), linear-gradient(135deg, #dcdcdc, #cfcfcf)";
+            }
+        }
+
+        if (data.status === "BORROWED") {
+            if (modalItemExpectedReturnDate) {
+                modalItemExpectedReturnDate.textContent = formatDate(data.expected_return_date);
             }
 
-            window.history.replaceState({}, "", `?${params}`);
+            if (borrowedInfoCard) borrowedInfoCard.style.display = "flex";
+            if (showBorrowFormBtn) showBorrowFormBtn.style.display = "none";
+            if (borrowedDisabledBtn) borrowedDisabledBtn.style.display = "block";
+            if (borrowForm) borrowForm.style.display = "none";
+        } else {
+            if (modalItemExpectedReturnDate) {
+                modalItemExpectedReturnDate.textContent = "N/A";
+            }
+
+            if (borrowedInfoCard) borrowedInfoCard.style.display = "none";
+            if (showBorrowFormBtn) showBorrowFormBtn.style.display = "block";
+            if (borrowedDisabledBtn) borrowedDisabledBtn.style.display = "none";
+        }
+    } catch (error) {
+        console.error("Browse item details error:", error);
+        showToast("Something went wrong.", "error");
+        closeItemDetailsModal();
+    }
+}
+
+/* =========================
+   EVENT SETUP
+========================= */
+function setupModalEvents() {
+    if (closeItemDetailsModalBtn) {
+        closeItemDetailsModalBtn.addEventListener("click", closeItemDetailsModal);
+    }
+
+    if (itemDetailsModal) {
+        itemDetailsModal.addEventListener("click", (e) => {
+            if (e.target === itemDetailsModal) {
+                closeItemDetailsModal();
+            }
         });
     }
 
-    // ✅ CATEGORY HIGHLIGHT
+    if (showBorrowFormBtn && borrowForm) {
+        showBorrowFormBtn.addEventListener("click", () => {
+            borrowForm.style.display = "block";
+        });
+    }
+
+    if (cancelBorrowFormBtn && borrowForm) {
+        cancelBorrowFormBtn.addEventListener("click", () => {
+            borrowForm.reset();
+            borrowForm.style.display = "none";
+        });
+    }
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && itemDetailsModal?.classList.contains("show")) {
+            closeItemDetailsModal();
+        }
+    });
+}
+
+function setupBorrowForm() {
+    if (!borrowForm) return;
+
+    borrowForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!selectedItemId) {
+            showToast("No item selected.", "error");
+            return;
+        }
+
+        const startDate = document.getElementById("start-date")?.value;
+        const returnDate = document.getElementById("return-date")?.value;
+
+        try {
+            const response = await fetch(BROWSE_API_URL + `items/${selectedItemId}/borrow/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    startDate,
+                    returnDate
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast(data.message || "Borrow request submitted successfully.", "success");
+                borrowForm.reset();
+                closeItemDetailsModal();
+
+                await loadCategoryItems(currentCategory);
+
+                const filtered = filterItems(searchInput?.value || "");
+                renderItems(filtered);
+                updateSearchDescription();
+            } else {
+                showToast(data.detail || "Failed to borrow item.", "error");
+            }
+        } catch (error) {
+            console.error("Browse borrow error:", error);
+            showToast("Something went wrong.", "error");
+        }
+    });
+}
+
+function highlightActiveCategory(category) {
     const buttons = document.querySelectorAll(".categories button");
 
     buttons.forEach(btn => {
@@ -252,195 +575,41 @@ document.addEventListener("DOMContentLoaded", async () => {
             btn.classList.remove("active");
         }
     });
+}
+
+/* =========================
+   INITIAL LOAD
+========================= */
+document.addEventListener("DOMContentLoaded", async () => {
+    setupModalEvents();
+    setupBorrowForm();
+    await loadUserAvatar();
+
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get("category") || "all";
+    const search = params.get("search") || "";
+
+    await loadCategoryItems(category);
+
+    if (searchInput) {
+        searchInput.value = search;
+        currentSearch = search.toLowerCase().trim();
+
+        const filtered = filterItems(search);
+        renderItems(filtered);
+        updateSearchDescription();
+
+        if (search) {
+            searchInput.focus();
+        }
+
+        searchInput.addEventListener("input", () => {
+            const filteredItems = filterItems(searchInput.value);
+            renderItems(filteredItems);
+            updateSearchDescription();
+            updateUrlSearch(searchInput.value.trim());
+        });
+    }
+
+    highlightActiveCategory(category);
 });
-
-loadUserAvatar();
-
-// const API_URL = "http://127.0.0.1:8000/api/";
-
-// const browseTitle = document.getElementById("browse-title");
-// const browseDescription = document.getElementById("browse-description");
-// const browseItemsTbody = document.getElementById("browse-items");
-// const categoryButtons = document.querySelectorAll(".category-btn");
-
-// const CATEGORY_CONFIG = {
-//     all: {
-//         title: "All Items",
-//         description: "Display all items shared by the community.",
-//         endpoint: "items/allitems/dashboard/"
-//     },
-//     sports: {
-//         title: "Sports Category",
-//         description: "Display all sports items shared by the community.",
-//         endpoint: "items/sports/"
-//     },
-//     electronics: {
-//         title: "Electronics Category",
-//         description: "Display all electronics items shared by the community.",
-//         endpoint: "items/electronics/"
-//     },
-//     books: {
-//         title: "Books Category",
-//         description: "Display all books shared by the community.",
-//         endpoint: "items/books/"
-//     },
-//     music: {
-//         title: "Music Category",
-//         description: "Display all music items shared by the community.",
-//         endpoint: "items/music/"
-//     },
-//     outdoor: {
-//         title: "Outdoor Category",
-//         description: "Display all outdoor items shared by the community.",
-//         endpoint: "items/outdoor/"
-//     },
-//     appliance: {
-//         title: "Appliance Category",
-//         description: "Display all appliance items shared by the community.",
-//         endpoint: "items/appliance/"
-//     }
-// };
-
-// function formatDate(dateString) {
-//     if (!dateString) return "N/A";
-
-//     const date = new Date(dateString);
-
-//     return date.toLocaleString("en-PH", {
-//         year: "numeric",
-//         month: "long",
-//         day: "numeric",
-//         hour: "numeric",
-//         minute: "2-digit",
-//         hour12: true
-//     });
-// }
-
-// function formatMoney(value) {
-//     if (value === null || value === undefined || value === "") return "N/A";
-//     return Number(value).toFixed(2);
-// }
-
-// function renderEmptyState(message) {
-//     browseItemsTbody.innerHTML = "";
-
-//     const row = document.createElement("tr");
-//     const cell = document.createElement("td");
-//     cell.colSpan = 11;
-//     cell.textContent = message;
-
-//     row.appendChild(cell);
-//     browseItemsTbody.appendChild(row);
-// }
-
-// function createItemRow(item) {
-//     const row = document.createElement("tr");
-
-//     const nameCell = document.createElement("td");
-//     nameCell.textContent = item.name || "N/A";
-
-//     const categoryCell = document.createElement("td");
-//     categoryCell.textContent = item.category_name || "N/A";
-
-//     const conditionCell = document.createElement("td");
-//     conditionCell.textContent = item.condition || "N/A";
-
-//     const securityDepositCell = document.createElement("td");
-//     securityDepositCell.textContent = formatMoney(item.security_deposit);
-
-//     const noteCell = document.createElement("td");
-//     noteCell.textContent = item.note || "N/A";
-
-//     const borrowingFeeCell = document.createElement("td");
-//     borrowingFeeCell.textContent = formatMoney(item.borrowingFee ?? item.borrowing_fee);
-
-//     const statusCell = document.createElement("td");
-//     statusCell.textContent = item.status || "N/A";
-
-//     const ownerCell = document.createElement("td");
-//     ownerCell.textContent = item.owner_name || "N/A";
-
-//     const dateCell = document.createElement("td");
-//     dateCell.textContent = formatDate(item.createdAt);
-
-//     const expectedReturnDateCell = document.createElement("td");
-//     expectedReturnDateCell.textContent =
-//         item.status === "BORROWED"
-//             ? formatDate(item.expected_return_date)
-//             : "N/A";
-
-//     const actionsCell = document.createElement("td");
-//     const viewBtn = document.createElement("button");
-//     viewBtn.textContent = "View Details";
-//     viewBtn.addEventListener("click", () => {
-//         window.location.href = `item-details.html?id=${item.id}`;
-//     });
-//     actionsCell.appendChild(viewBtn);
-
-//     row.appendChild(nameCell);
-//     row.appendChild(categoryCell);
-//     row.appendChild(conditionCell);
-//     row.appendChild(securityDepositCell);
-//     row.appendChild(noteCell);
-//     row.appendChild(borrowingFeeCell);
-//     row.appendChild(statusCell);
-//     row.appendChild(ownerCell);
-//     row.appendChild(dateCell);
-//     row.appendChild(expectedReturnDateCell);
-//     row.appendChild(actionsCell);
-
-//     return row;
-// }
-
-// async function loadCategoryItems(categoryKey) {
-//     const config = CATEGORY_CONFIG[categoryKey];
-
-//     if (!config) return;
-
-//     browseTitle.textContent = config.title;
-//     browseDescription.textContent = config.description;
-//     browseItemsTbody.innerHTML = "";
-
-//     try {
-//         const response = await fetch(API_URL + config.endpoint, {
-//             method: "GET",
-//             headers: {
-//                 "Content-Type": "application/json"
-//             },
-//             credentials: "include"
-//         });
-
-//         const data = await response.json();
-
-//         if (!response.ok) {
-//             alert(data.detail || data.message || "Failed to load items.");
-//             return;
-//         }
-
-//         if (!data.length) {
-//             renderEmptyState("No items found for this category.");
-//             return;
-//         }
-
-//         for (const item of data) {
-//             browseItemsTbody.appendChild(createItemRow(item));
-//         }
-//     } catch (error) {
-//         console.log("loadCategoryItems error:", error);
-//         alert("Something went wrong while loading items.");
-//     }
-// }
-
-// categoryButtons.forEach((button) => {
-//     button.addEventListener("click", async () => {
-//         categoryButtons.forEach((btn) => btn.classList.remove("active"));
-//         button.classList.add("active");
-
-//         const category = button.dataset.category;
-//         await loadCategoryItems(category);
-//     });
-// });
-
-// document.addEventListener("DOMContentLoaded", async () => {
-//     await loadCategoryItems("all");
-// });

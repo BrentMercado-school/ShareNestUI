@@ -8,12 +8,11 @@
 <!-- FONT -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-<!-- FIXED CSS PATH -->
-<link rel="stylesheet" href="./css/dashboard.css">
+<!-- CSS -->
+<link rel="stylesheet" href="css/dashboard.css">
 
 <!-- ICONS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 </head>
 
 <body>
@@ -52,10 +51,6 @@
                     <h3 id="browse-title">All Items</h3>
                 </div>
             </div>
-
-            <button onclick="window.location.href='dashboard.html'">
-                <i class="fa fa-arrow-left"></i>
-            </button>
         </div>
 
         <!-- SEARCH -->
@@ -82,10 +77,121 @@
         </div>
 
     </main>
-
 </div>
 
-<script src="/ShareNestUI/js/browse-items.js"></script>
+<!-- ITEM DETAILS MODAL -->
+<div id="item-details-modal" class="modal">
+    <div class="modal-content item-sheet">
+        <div class="item-sheet-hero">
+            <button type="button" id="close-item-details-modal" class="item-sheet-close">
+                <i class="fa fa-arrow-left"></i>
+            </button>
+
+            <div id="modal-item-image" class="item-sheet-image"></div>
+
+            <div class="item-sheet-price-bar">
+                Security Deposit: ₱<span id="modal-item-security-deposit">0</span>
+                |
+                Borrowing Fee: ₱<span id="modal-item-borrowing-fee">0</span>
+            </div>
+        </div>
+
+        <div class="item-sheet-body">
+            <h2 id="modal-item-name" class="item-sheet-title">N/A</h2>
+
+            <div class="item-sheet-category">
+                <span id="modal-item-category" class="category-pill">N/A</span>
+            </div>
+
+            <div class="item-sheet-section">
+                <h3>Description</h3>
+                <div class="item-sheet-box">
+                    <p id="modal-item-description">N/A</p>
+                </div>
+            </div>
+
+            <div class="item-sheet-meta-row">
+                <div class="item-meta-pill">
+                    <span class="meta-label">Condition:</span>
+                    <span id="modal-item-condition">N/A</span>
+                </div>
+
+                <div class="item-meta-pill">
+                    <span class="meta-label">Status:</span>
+                    <span id="modal-item-status">N/A</span>
+                </div>
+
+                <div class="item-meta-pill">
+                    <span class="meta-label">Owner:</span>
+                    <span id="modal-item-owner">N/A</span>
+                </div>
+            </div>
+
+            <div class="item-sheet-section">
+                <h3>Owner's Note</h3>
+                <div class="item-sheet-box">
+                    <p id="modal-item-note">N/A</p>
+                </div>
+            </div>
+
+            <div id="borrowed-info-card" class="borrowed-info-card" style="display: none;">
+                <div class="borrowed-info-icon">
+                    <i class="fa-regular fa-calendar"></i>
+                </div>
+
+                <div class="borrowed-info-text">
+                    <span>Expected Return Date</span>
+                    <p id="modal-item-expected-return-date">N/A</p>
+                </div>
+            </div>
+
+            <div class="borrow-section">
+                <button id="show-borrow-form-btn" type="button" class="borrow-main-btn">
+                    Borrow
+                </button>
+
+                <button id="borrowed-disabled-btn" type="button" class="borrowed-disabled-btn" style="display: none;" disabled>
+                    Currently Borrowed
+                </button>
+
+                <form id="borrow-form" class="borrow-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="start-date">Start Date</label>
+                        <input type="date" id="start-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="return-date">Return Date</label>
+                        <input type="date" id="return-date" required>
+                    </div>
+
+                    <div class="actions">
+                        <button type="button" id="cancel-borrow-form" class="btn-cancel borrow-cancel-btn">Cancel</button>
+                        <button type="submit" class="btn-primary borrow-submit-btn">Submit Borrow Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-message" class="toast-message">
+    <div id="toast-icon" class="toast-icon">
+        <i class="fa-solid fa-check"></i>
+    </div>
+
+    <div class="toast-text">
+        <strong id="toast-title">Success</strong>
+        <p id="toast-text">Borrow request submitted successfully.</p>
+    </div>
+
+    <button type="button" class="toast-close" onclick="hideToast()">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
+
+<script src="js/browse-items.js"></script>
 
 </body>
 </html>
