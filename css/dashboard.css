@@ -260,11 +260,36 @@ CARD
 }
 
 .owner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 0.85rem;
     color: #777;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
+.owner-avatar-img,
+.owner-avatar-fallback {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.owner-avatar-img {
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+}
+
+.owner-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4e7d5a;
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
 .available {
     display: inline-block;
     background: #e6f4ea;

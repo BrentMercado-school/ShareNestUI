@@ -61,6 +61,22 @@ function normalizeMediaUrl(url) {
     return url;
 }
 
+function getOwnerImage(item) {
+    if (item?.owner_image) return normalizeMediaUrl(item.owner_image);
+    if (item?.owner?.image) return normalizeMediaUrl(item.owner.image);
+    return "";
+}
+
+function getOwnerInitials(item) {
+    const ownerName = item?.owner_name || item?.owner?.name || "U";
+    return ownerName
+        .split(" ")
+        .map(part => part[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+}
+
 function getItemImage(item) {
     if (item?.images && item.images.length > 0 && item.images[0]?.image) {
         return normalizeMediaUrl(item.images[0].image);
@@ -177,6 +193,8 @@ window.goToCategory = goToCategory;
 function createCard(item) {
     const isBorrowed = item.status === "BORROWED";
     const imageUrl = getItemImage(item);
+    const ownerImage = getOwnerImage(item);
+    const ownerName = item.owner_name || item?.owner?.name || "Unknown";
 
     return `
         <div class="card">
@@ -185,9 +203,14 @@ function createCard(item) {
             <div class="card-body">
                 <h4>${item.name || "No Name"}</h4>
 
-                <p class="owner">
-                    <i class="fa fa-user"></i> ${item.owner_name || "Unknown"}
-                </p>
+                <div class="owner">
+                    ${
+                        ownerImage
+                            ? `<img src="${ownerImage}" alt="${ownerName}" class="owner-avatar-img">`
+                            : `<div class="owner-avatar-fallback">${getOwnerInitials(item)}</div>`
+                    }
+                    <span>${ownerName}</span>
+                </div>
 
                 ${
                     isBorrowed
@@ -350,7 +373,7 @@ async function getAllItems() {
         }
 
         let html = "";
-        data.forEach(item => {
+        data.slice(0, 8).forEach(item => {
             html += createCard(item);
         });
 
@@ -500,7 +523,7 @@ function setupBorrowForm() {
 /* =========================
    INITIAL LOAD
 ========================= */
-document.addEventListener("DOMContentLoaded", async () => {~
+document.addEventListener("DOMContentLoaded", async () => {
     setupSearchRedirect();
     setupModalEvents();
     setupBorrowForm();
