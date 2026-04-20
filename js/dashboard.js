@@ -304,7 +304,7 @@ async function getLatestItems() {
         }
 
         let html = "";
-        data.forEach(item => {
+        data.slice(0, 4).forEach(item => {
             html += createCard(item);
         });
 

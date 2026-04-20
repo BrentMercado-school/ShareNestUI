@@ -1,12 +1,16 @@
+const ADD_ITEM_API_URL = window.API_URL || "http://127.0.0.1:8000/api/";
+
 const openAddItemModalBtn = document.getElementById("open-add-item-modal");
 const closeAddItemModalBtn = document.getElementById("close-add-item-modal");
 const addItemModal = document.getElementById("add-item-modal");
 const addItemForm = document.getElementById("add-item-form");
 const categorySelect = document.getElementById("item-category");
 
+let addItemToastTimeout;
+
 async function getCategories() {
     try {
-        const response = await fetch(API_URL + "categories/", {
+        const response = await fetch(ADD_ITEM_API_URL + "categories/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -15,6 +19,10 @@ async function getCategories() {
         });
 
         const data = await response.json();
+
+        if (!response.ok || !Array.isArray(data) || !categorySelect) {
+            return;
+        }
 
         categorySelect.innerHTML = `<option value="">Select category</option>`;
 
@@ -25,11 +33,13 @@ async function getCategories() {
             categorySelect.appendChild(option);
         }
     } catch (error) {
-        console.log(error);
+        console.log("getCategories error:", error);
     }
 }
 
 function resetAddItemForm() {
+    if (!addItemForm) return;
+
     addItemForm.reset();
 
     const borrowingFeeInput = document.getElementById("item-borrowing-fee");
@@ -38,11 +48,44 @@ function resetAddItemForm() {
     }
 }
 
+function showAddItemToast(message = "Success", type = "success") {
+    if (typeof showToast === "function") {
+        showToast(message, type);
+        return;
+    }
+
+    const toast = document.getElementById("toast-message");
+    const toastText = document.getElementById("toast-text");
+    const toastTitle = document.getElementById("toast-title");
+    const toastIcon = document.getElementById("toast-icon");
+
+    if (!toast || !toastText || !toastTitle || !toastIcon) return;
+
+    toast.classList.remove("success", "error");
+    toast.classList.add(type);
+
+    if (type === "error") {
+        toastTitle.textContent = "Error";
+        toastIcon.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i>`;
+    } else {
+        toastTitle.textContent = "Success";
+        toastIcon.innerHTML = `<i class="fa-solid fa-check"></i>`;
+    }
+
+    toastText.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(addItemToastTimeout);
+    addItemToastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
+}
+
 if (openAddItemModalBtn && addItemModal) {
     openAddItemModalBtn.addEventListener("click", async () => {
-        await getCategories();
         resetAddItemForm();
         addItemModal.classList.add("show");
+        await getCategories();
     });
 }
 
@@ -62,55 +105,34 @@ if (addItemModal) {
     });
 }
 
-let toastTimeout;
-
-function showToast(message = "Success", type = "success") {
-    const toast = document.getElementById("toast-message");
-    const toastText = document.getElementById("toast-text");
-    const toastTitle = document.getElementById("toast-title");
-    const toastIcon = document.getElementById("toast-icon");
-
-    if (!toast) return;
-
-    toast.classList.remove("success", "error");
-    toast.classList.add(type);
-
-    if (type === "error") {
-        toastTitle.textContent = "Error";
-        toastIcon.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i>`;
-    } else {
-        toastTitle.textContent = "Success";
-        toastIcon.innerHTML = `<i class="fa-solid fa-check"></i>`;
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && addItemModal?.classList.contains("show")) {
+        addItemModal.classList.remove("show");
+        resetAddItemForm();
     }
-
-    toastText.textContent = message;
-    toast.classList.add("show");
-
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3000);
-}
-
-function hideToast() {
-    const toast = document.getElementById("toast-message");
-    if (toast) toast.classList.remove("show");
-}
+});
 
 if (addItemForm) {
     addItemForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-        const name = document.getElementById("item-name").value;
-        const category = parseInt(document.getElementById("item-category").value);
-        const description = document.getElementById("item-description").value;
-        const condition = document.getElementById("item-condition").value;
-        const security_deposit = parseFloat(document.getElementById("item-security-deposit").value);
-        const note = document.getElementById("item-note").value;
+        const name = document.getElementById("item-name").value.trim();
+        const category = parseInt(document.getElementById("item-category").value, 10);
+        const description = document.getElementById("item-description").value.trim();
+        const condition = document.getElementById("item-condition").value.trim();
+        const securityDepositRaw = document.getElementById("item-security-deposit").value;
+        const note = document.getElementById("item-note").value.trim();
         const borrowingFee = 50;
 
+        if (!category) {
+            showAddItemToast("Please select a category.", "error");
+            return;
+        }
+
+        const security_deposit = securityDepositRaw ? parseFloat(securityDepositRaw) : 0;
+
         try {
-            const response = await fetch(API_URL + "items/create/", {
+            const response = await fetch(ADD_ITEM_API_URL + "items/create/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -123,31 +145,33 @@ if (addItemForm) {
                     condition,
                     security_deposit,
                     note,
-                    borrowingFee   // 🔥 FIXED
+                    borrowingFee
                 })
             });
 
             const data = await response.json();
-
-            console.log("RESPONSE:", data); // 🔥 DEBUG
+            console.log("Add item response:", data);
 
             if (response.ok) {
-                showToast("Item added successfully!", "success");
-
+                showAddItemToast("Item added successfully!", "success");
                 resetAddItemForm();
                 addItemModal.classList.remove("show");
 
                 if (typeof getAllUserItems === "function") {
                     await getAllUserItems();
                 }
-
+                if (typeof getAllItems === "function") {
+                    await getAllItems();
+                }
+                if (typeof getLatestItems === "function") {
+                    await getLatestItems();
+                }
             } else {
-                showToast(data.message || data.detail || "Failed to add item.", "error");
+                showAddItemToast(data.message || data.detail || "Failed to add item.", "error");
             }
-
         } catch (error) {
-            console.log(error);
-            alert("Something went wrong.");
+            console.log("Add item error:", error);
+            showAddItemToast("Something went wrong.", "error");
         }
     });
 }
