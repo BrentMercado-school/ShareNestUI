@@ -3,9 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Item</title>
+    <title>Item Details</title>
+
+    <link rel="stylesheet" href="css/styleddb.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 </head>
 <body>
+
+<div class="layout">
+
+     <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">ShareNest</h2>
+
+        <nav>
+            <a href="dashboard.html" class="active">
+                <i class="fa fa-home"></i> Home
+            </a>
+            <a href="my-items.html">
+                <i class="fa fa-box"></i> My Items
+            </a>
+            <a href="borrow-requests.html">
+                <i class="fa fa-file"></i> Requests
+            </a>
+            <a href="profile.html">
+                <i class="fa fa-user"></i> Profile
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
     <h1>Edit Item</h1>
 
     <form id="edit-item-form">
@@ -61,6 +90,28 @@
         </div>
     </form>
 
-    <script src="js/edit-item-page.js"></script>
+
+<!-- MODAL -->
+<div id="borrow-modal" class="modal">
+    <div class="modal-content">
+        <h2>Borrow Item</h2>
+
+        <form id="borrow-form">
+            <label>Start Date</label>
+            <input type="date" id="start-date" required>
+
+            <label>Return Date</label>
+            <input type="date" id="return-date" required>
+
+            <div class="actions">
+                <button type="button" id="close-borrow-modal">Cancel</button>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/item-details.js"></script>
+
 </body>
 </html>

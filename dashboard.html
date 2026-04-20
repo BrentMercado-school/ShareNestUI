@@ -1,126 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="css/styel.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShareNest Dashboard</title>
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<!-- CSS -->
+<link rel="stylesheet" href="css/styleddb.css">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
+
 <body>
 
-    <button id="logout-btn">Logout</button>
-    <button onclick="window.location.href='my-borrow-requests.html'">My Borrow Requests</button>
-    <button onclick="window.location.href='my-borrowed-items.html'">My Borrowed Items</button>
+<div class="layout">
 
-    
-    <button onclick="window.location.href='borrow-requests.html'">View Borrow Request</button>
-    <button onclick="window.location.href='profile.html'">Profile</button>
-    <button onclick="window.location.href='my-items.html'">My Items</button>
-    <button id="open-add-item-modal">Add Item</button>
-    <button onclick="window.location.href='dashboard.html'">Home</button>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">ShareNest</h2>
 
-    <hr>
-    <button onclick="window.location.href='browse-item.html'">Browse Items</button>
+        <nav>
+            <a href="dashboard.html" class="active">
+                <i class="fa fa-home"></i> Home
+            </a>
+            <a href="my-items.html">
+                <i class="fa fa-box"></i> My Items
+            </a>
+            <a href="borrow-requests.html">
+                <i class="fa fa-file"></i> Requests
+            </a>
+            <a href="my-borrow-requests.html">
+                <i class="fa fa-file"></i> Your Requests
+            </a>
+            <a href="profile.html">
+                <i class="fa fa-user"></i> Profile
+            </a>
+        </nav>
+    </aside>
 
-    <h1>Dashboard</h1>
-    <h2>Current User: </h2>
-    <p id="username"></p>
+    <!-- MAIN -->
+    <main class="main">
 
-    <h2 class="">All Items: </h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Condition</th>
-                <th>Security Deposit</th>
-                <th>Note</th>
-                <th>Borrowing Fee</th>
-                <th>Status</th>
-                <th>Owner ID</th>
-                <th>Actions</th>
-                <th>Expected Return Date</th>
-            </tr>
-        </thead>
-        <tbody id="items"></tbody>
-    </table>
-
-
-    <div id="add-item-modal" class="modal">
-        <div class="modal-content">
-            <h2>Add Item</h2>
-
-            <form id="add-item-form">
-                <div class="form-group">
-                    <label for="item-name">Name</label>
-                    <input type="text" id="item-name" required>
+            <!-- NAVBAR -->
+            <div class="navbar">
+                <div class="user">
+                    <div class="avatar">DM</div>
+                    <div>
+                        <p>Welcome</p>
+                        <h3 id="username">User</h3>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="item-category">Category</label>
-                    <select id="item-category" required>
-                        <option value="">Select category</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="item-description">Description</label>
-                    <input type="text" id="item-description" required>
-                </div>
+                <button id="logout-btn">
+                    <i class="fa fa-sign-out"></i>
+                </button>
+            </div>
 
-                <div class="form-group">
-                    <label for="item-condition">Condition</label>
-                    <input type="text" id="item-condition" required>
-                </div>
+            <!-- SEARCH -->
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search items...">
+            </div>
 
-                <div class="form-group">
-                    <label for="item-security-deposit">Security Deposit</label>
-                    <input type="number" id="item-security-deposit" required>
-                </div>
+            <!-- CATEGORY -->
+            <div class="categories">
+                <button>All</button>
+                <button>Appliances</button>
+                <button>Tech</button>
+                <button>Sports</button>
+            </div>
 
-                <div class="form-group">
-                    <label for="item-note">Note</label>
-                    <textarea id="item-note"></textarea>
-                </div>
+            <!-- LATEST ITEMS -->
+            <div class="section">
+                <h3>Latest Items</h3>
+                <div class="grid" id="latest-items"></div>
+            </div>
 
-                <div class="form-group">
-                    <label for="item-borrowing-fee">Borrowing Fee</label>
-                    <input type="number" id="item-borrowing-fee" value="50" readonly>
-                </div>
+            <!-- ALL ITEMS -->
+            <div class="section">
+                <h3>All Items</h3>
+                <div class="grid" id="items"></div>
+            </div>
 
-                <div class="actions">
-                    <button type="button" id="close-add-item-modal">Cancel</button>
-                    <button type="submit">Save Item</button>
-                </div>
-            </form>
         </div>
+    </main>
+
+</div>
+
+<!-- FLOAT BUTTON -->
+<button id="open-add-item-modal" class="fab">
+    <i class="fa fa-plus"></i>
+</button>
+
+<!-- MODAL -->
+<div id="add-item-modal" class="modal">
+    <div class="modal-content">
+
+        <h2>Add Item</h2>
+
+        <form id="add-item-form">
+            <input type="text" id="item-name" placeholder="Name" required>
+            <input type="text" id="item-description" placeholder="Description">
+            <input type="text" id="item-condition" placeholder="Condition">
+            <input type="number" id="item-security-deposit" placeholder="Deposit">
+            <textarea id="item-note" placeholder="Note"></textarea>
+            <input type="number" id="item-borrowing-fee" value="50" readonly>
+
+            <div class="actions">
+                <button type="button" id="close-add-item-modal">Cancel</button>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+
     </div>
+</div>
 
-    <h2>Latest 5 Items</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Condition</th>
-                <th>Security Deposit</th>
-                <th>Note</th>
-                <th>Borrowing Fee</th>
-                <th>Status</th>
-                <th>Owner</th>
-                <th>Date Created</th>
-                <th>Expected Return Date</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="latest-items"></tbody>
-    </table>
+<!-- SCRIPTS -->
+<script src="js/current-user.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/add-item.js"></script>
+<script src="js/logout.js"></script>
 
-
-    <script src="js/current-user.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/logout.js"></script>
-    <script src="js/add-item.js"></script>
-    <script src="js/edit-item.js"></script>
-    <script src="js/delete-item.js"></script>
-    <script src="js/return-item.js"></script>
 </body>
 </html>

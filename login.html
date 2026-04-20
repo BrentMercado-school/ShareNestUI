@@ -3,18 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-</head>
-<body>
-    <h1>Login Form</h1>
-    <form id="login-form">
-        <input type="text" id="name" placeholder="Enter name">
-        <input type="password" id="password" placeholder="Enter password">
-        <button type="submit" id="submit-btn">Login</button>
-    </form>
+    <title>Login</title>
 
-    <p>Don't have an account yet?</p> 
-    <a href="register.html">Register Here</a>
-    <script src="js/login.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/stylelogin.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="login-card">
+        <h1 class="logo">ShareNest</h1>
+
+        <h2>Welcome Back!</h2>
+
+        <form id="login-form">
+            <label>Name</label>
+            <input type="text" id="name" placeholder="Enter name" required>
+
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password" required>
+
+            <button type="submit">Log In</button>
+        </form>
+
+        <p class="register-text">
+            Don't have an account yet?
+            <a href="register.html">Sign up here</a>
+        </p>
+    </div>
+
+</div>
+
+<script src="js/login.js"></script>
 </body>
 </html>

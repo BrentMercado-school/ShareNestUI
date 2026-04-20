@@ -1,37 +1,100 @@
- .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
+/* BODY */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f6fff8;
+}
 
-        .modal.show {
-            display: flex;
-        }
+/* TOP BAR */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2d6a4f;
+    padding: 15px 30px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
 
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 400px;
-        }
+.topbar h1 {
+    color: white;
+    margin: 0;
+}
 
-        .form-group {
-            margin-bottom: 12px;
-        }
+/* LOGOUT BUTTON */
+#logout-btn {
+    background-color: #40916c;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
+#logout-btn:hover {
+    background-color: #52b788;
+}
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
+/* NAVBAR */
+.navbar {
+    display: flex;
+    gap: 12px;
+    padding: 15px 30px;
+    background-color: #edf7f1;
+    border-bottom: 1px solid #d8f3dc;
+}
+
+/* NAV BUTTONS */
+.navbar button {
+    background-color: #40916c;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* HOVER EFFECT */
+.navbar button:hover {
+    background-color: #2d6a4f;
+    transform: translateY(-2px);
+}
+
+/* ACTIVE PAGE */
+.navbar button.active {
+    background-color: #1b4332;
+}
+
+/* ADD BUTTON */
+.add-btn {
+    background-color: #1b4332;
+    font-weight: bold;
+}
+
+.add-btn:hover {
+    background-color: #081c15;
+}
+
+/* MAIN CONTENT */
+main {
+    padding: 25px 30px;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: white;
+}
+
+thead {
+    background-color: #2d6a4f;
+    color: white;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}

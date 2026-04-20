@@ -1,0 +1,131 @@
+/* ================= RESET ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #f4f4f4;
+}
+
+/* ================= LOGIN / REGISTER ================= */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-card {
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.logo {
+    text-align: center;
+    color: #4e7d5a;
+    margin-bottom: 10px;
+}
+
+.login-card h2 {
+    margin-bottom: 20px;
+}
+
+.login-card label {
+    display: block;
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.login-card button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    background: #4e7d5a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login-card button:hover {
+    background: #3c6448;
+}
+
+.register-text {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.register-text a {
+    color: #4e7d5a;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* ================= DASHBOARD ================= */
+.app {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    background: #4e7d5a;
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.welcome {
+    font-size: 12px;
+    color: gray;
+}
+
+/* BUTTONS */
+button {
+    background: #4e7d5a;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #3c6448;
+}

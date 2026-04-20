@@ -1,20 +1,20 @@
-const editItemModal = document.getElementById("edit-item-modal");
-const closeEditItemModalBtn = document.getElementById("close-edit-item-modal");
-const editItemForm = document.getElementById("edit-item-form");
-const editCategorySelect = document.getElementById("edit-item-category");
-
+// edit-item.js
+// ✅ Lazy getters — grabbed at call time, not at script load
+const getEditModal = () => document.getElementById("edit-item-modal");
+const getEditForm = () => document.getElementById("edit-item-form");
+const getEditCategorySelect = () => document.getElementById("edit-item-category");
+const getCloseEditBtn = () => document.getElementById("close-edit-item-modal");
 let selectedItemId = null;
 
 async function loadEditCategories(selectedCategoryId = "") {
     try {
         const response = await fetch(API_URL + "categories/", {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
         });
 
         const data = await response.json();
+        const editCategorySelect = getEditCategorySelect(); // ✅ grabbed here
 
         editCategorySelect.innerHTML = `<option value="">Select category</option>`;
 
@@ -44,71 +44,62 @@ async function openEditItemModal(item) {
     document.getElementById("edit-item-condition").value = item.condition || "";
     document.getElementById("edit-item-security-deposit").value = item.security_deposit || "";
     document.getElementById("edit-item-note").value = item.note || "";
-    document.getElementById("edit-item-borrowing-fee").value = item.borrowingFee || "";
+    document.getElementById("edit-item-borrowing-fee").value = item.borrowing_fee ?? item.borrowingFee ?? "";
     document.getElementById("edit-item-status").value = item.status || "AVAILABLE";
 
-    editItemModal.classList.add("show");
+    getEditModal().classList.add("show"); // ✅
 }
 
-if (closeEditItemModalBtn && editItemModal) {
-    closeEditItemModalBtn.addEventListener("click", () => {
-        editItemModal.classList.remove("show");
-    });
-}
+// ✅ Attach listeners inside DOMContentLoaded so elements are guaranteed to exist
+document.addEventListener("DOMContentLoaded", () => {
+    const closeBtn = getCloseEditBtn();
+    const modal = getEditModal();
+    const form = getEditForm();
 
-if (editItemModal) {
-    editItemModal.addEventListener("click", (e) => {
-        if (e.target === editItemModal) {
-            editItemModal.classList.remove("show");
-        }
-    });
-}
+    if (closeBtn && modal) {
+        closeBtn.addEventListener("click", () => modal.classList.remove("show"));
+    }
 
-if (editItemForm) {
-    editItemForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) modal.classList.remove("show");
+        });
+    }
 
-        const name = document.getElementById("edit-item-name").value;
-        const category = document.getElementById("edit-item-category").value;
-        const description = document.getElementById("edit-item-description").value;
-        const condition = document.getElementById("edit-item-condition").value;
-        const security_deposit = document.getElementById("edit-item-security-deposit").value;
-        const note = document.getElementById("edit-item-note").value;
-        const borrowingFee = document.getElementById("edit-item-borrowing-fee").value;
-        const status = document.getElementById("edit-item-status").value;
+    if (form) {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        try {
-            const response = await fetch(API_URL + `items/${selectedItemId}/update/`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    name,
-                    category,
-                    description,
-                    condition,
-                    security_deposit,
-                    note,
-                    borrowingFee,
-                    status
-                })
-            });
+            const name = document.getElementById("edit-item-name").value;
+            const category = document.getElementById("edit-item-category").value;
+            const description = document.getElementById("edit-item-description").value;
+            const condition = document.getElementById("edit-item-condition").value;
+            const security_deposit = document.getElementById("edit-item-security-deposit").value;
+            const note = document.getElementById("edit-item-note").value;
+            const borrowingFee = document.getElementById("edit-item-borrowing-fee").value;
+            const status = document.getElementById("edit-item-status").value;
 
-            const data = await response.json();
-            console.log("Update item response:", data);
+            try {
+                const response = await fetch(API_URL + `items/${selectedItemId}/update/`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ name, category, description, condition, security_deposit, note, borrowingFee, status })
+                });
 
-            if (response.ok) {
-                alert("Item updated successfully.");
-                editItemModal.classList.remove("show");
-                await getAllUserItems();
-            } else {
-                alert(JSON.stringify(data));
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("Item updated successfully.");
+                    modal.classList.remove("show");
+                    document.dispatchEvent(new CustomEvent("itemUpdated", { detail: { id: selectedItemId } }));
+                } else {
+                    alert(JSON.stringify(data));
+                }
+            } catch (error) {
+                console.log(error);
+                alert("Something went wrong.");
             }
-        } catch (error) {
-            console.log(error);
-            alert("Something went wrong.");
-        }
-    });
-}
+        });
+    }
+});
