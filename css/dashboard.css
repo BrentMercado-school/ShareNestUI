@@ -266,6 +266,18 @@
         margin-bottom: 10px;
     }
 
+        .borrowed-until {
+        display: inline-block;
+        background: #fdecea;
+        color: #c62828;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+
     /* BUTTON */
     button {
         background: #4e7d5a;

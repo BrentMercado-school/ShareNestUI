@@ -107,14 +107,10 @@ function createCard(item) {
                     <i class="fa fa-user"></i> ${item.owner_name || "Unknown"}
                 </p>
 
-                <p class="${item.status === "AVAILABLE" ? "available" : "borrowed"}">
-                    ${item.status || "N/A"}
-                </p>
-
                 ${
                     isBorrowed
-                        ? `<p>Return: ${formatDateTime(item.expected_return_date)}</p>`
-                        : ""
+                        ? `<p class="borrowed-until">Borrowed until ${formatDate(item.expected_return_date)}</p>`
+                        : `<p class="available">Available</p>`
                 }
 
                 <button onclick="openItemDetailsModal(${item.id})">
