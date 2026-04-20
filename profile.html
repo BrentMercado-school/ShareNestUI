@@ -4,25 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <h1>My Profile</h1>
+<body class="profile-page">
 
-    <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
-    <button id="open-edit-profile-modal">Edit Profile</button>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <h2 class="logo">ShareNest</h2>
 
-    <div>
-        <p><strong>Name:</strong> <span id="profile-name">N/A</span></p>
-        <p><strong>Email:</strong> <span id="profile-email">N/A</span></p>
-        <p><strong>Address:</strong> <span id="profile-address">N/A</span></p>
-        <p><strong>Contact Number:</strong> <span id="profile-contact-number">N/A</span></p>
-        <p><strong>Image URL:</strong> <span id="profile-image-url">N/A</span></p>
+            <nav>
+                <a href="dashboard.html">
+                    <i class="fa fa-home"></i> Home
+                </a>
+                <a href="my-items.html">
+                    <i class="fa fa-box"></i> My Items
+                </a>
+                <a href="borrow-requests.html">
+                    <i class="fa fa-file"></i> Requests
+                </a>
+                <a href="profile.html" class="active">
+                    <i class="fa fa-user"></i> Profile
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="profile-shell">
+                <header class="profile-topbar">
+                    <h1>My Profile</h1>
+                </header>
+
+                <section class="profile-layout">
+                    <!-- LEFT -->
+                    <div class="profile-card">
+                        <div class="profile-avatar-wrapper">
+                            <img
+                                id="profile-avatar"
+                                class="profile-avatar"
+                                src="images/default-profile.png"
+                                alt="Profile Image"
+                            >
+
+                            <button id="open-edit-profile-modal" class="edit-avatar-btn" type="button">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </div>
+
+                        <h2 id="profile-name" class="profile-name">N/A</h2>
+                        <p id="profile-email" class="profile-email">N/A</p>
+
+                        <div class="profile-info-grid">
+                            <div class="profile-info-card">
+                                <span>Address</span>
+                                <p id="profile-address">N/A</p>
+                            </div>
+
+                            <div class="profile-info-card">
+                                <span>Contact Number</span>
+                                <p id="profile-contact-number">N/A</p>
+                            </div>
+
+                            <div class="profile-info-card">
+                                <span>Email</span>
+                                <p id="profile-email-details">N/A</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="profile-actions-section">
+                        <div class="profile-actions-card">
+                            <h3 class="section-title">Quick Actions</h3>
+
+                            <button class="action-card" onclick="window.location.href='my-items.html'">
+                                <div class="action-left">
+                                    <div class="action-icon">
+                                        <i class="fa-solid fa-cube"></i>
+                                    </div>
+                                    <span>My Shared Items</span>
+                                </div>
+                                <i class="fa-solid fa-chevron-right action-arrow"></i>
+                            </button>
+
+                            <button class="action-card" onclick="window.location.href='items-borrowed.html'">
+                                <div class="action-left">
+                                    <div class="action-icon">
+                                        <i class="fa-solid fa-box-open"></i>
+                                    </div>
+                                    <span>Items Borrowed</span>
+                                </div>
+                                <i class="fa-solid fa-chevron-right action-arrow"></i>
+                            </button>
+
+                            <button class="action-card" onclick="window.location.href='pending-request.html'">
+                                <div class="action-left">
+                                    <div class="action-icon">
+                                        <i class="fa-regular fa-file-lines"></i>
+                                    </div>
+                                    <span>Pending Request</span>
+                                </div>
+                                <i class="fa-solid fa-chevron-right action-arrow"></i>
+                            </button>
+
+                            <button class="action-card" onclick="window.location.href='borrowing-history.html'">
+                                <div class="action-left">
+                                    <div class="action-icon">
+                                        <i class="fa-regular fa-clipboard"></i>
+                                    </div>
+                                    <span>Borrowing History</span>
+                                </div>
+                                <i class="fa-solid fa-chevron-right action-arrow"></i>
+                            </button>
+
+                            <button id="logout-btn" class="action-card logout-card" type="button">
+                                <div class="action-left">
+                                    <div class="action-icon logout-icon">
+                                        <i class="fa-solid fa-right-from-bracket"></i>
+                                    </div>
+                                    <span>Logout</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
     </div>
 
+    <!-- EDIT PROFILE MODAL -->
     <div id="edit-profile-modal" class="modal">
         <div class="modal-content">
-            <h2>Edit Profile</h2>
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button type="button" id="close-edit-profile-modal" class="modal-close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
             <form id="edit-profile-form">
                 <div class="form-group">
@@ -51,13 +173,28 @@
                 </div>
 
                 <div class="actions">
-                    <button type="button" id="close-edit-profile-modal">Cancel</button>
-                    <button type="submit">Save Changes</button>
+                    <button type="button" id="close-edit-profile-modal-secondary" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <div id="toast-message" class="toast-message">
+        <div id="toast-icon" class="toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <div class="toast-text">
+            <strong id="toast-title">Success</strong>
+            <p id="toast-text">Profile updated successfully.</p>
+        </div>
+
+        <button type="button" class="toast-close" onclick="hideToast()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
     <script src="js/profile.js"></script>
+    <script src="js/logout.js"></script>
 </body>
 </html>

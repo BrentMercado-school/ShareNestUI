@@ -38,9 +38,17 @@
     }
 
     .logo {
+        color: white;
+        text-decoration: none;
+        font-size: 1.4rem;
+        font-weight: 600;
+        display: block;
         margin-bottom: 30px;
     }
 
+    .logo:hover {
+        opacity: 0.8;
+    }
     .sidebar nav a {
         display: block;
         color: white;
@@ -71,8 +79,24 @@
     }
 
     .layout {
-         display: block;
-         min-height: 100vh; /* IMPORTANT */
+        display: block;
+        min-height: 100vh;
+    }
+
+    /* ACTIVE CATEGORY */
+    .categories button.active {
+        background: #2f5d44;
+    }
+
+    /* LOADING TEXT */
+    .loading {
+        font-size: 14px;
+        color: #777;
+        padding: 10px;
+    }
+
+    .categories button.active {
+        background: #2f5d44;
     }
 
     /* =========================
@@ -123,6 +147,14 @@
         font-size: 0.95rem;
     }
 
+    mark {
+    background-color: #c8e6c9;
+    color: #1b5e20;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: 600;
+    }
+
     /* =========================
     CATEGORY BUTTONS
     ========================= */
@@ -130,6 +162,13 @@
         display: flex;
         gap: 10px;
         margin-bottom: 20px;
+    }
+
+    /* ACTIVE CATEGORY */
+    .categories button.active {
+        background-color: #2f5d3a; /* darker green */
+        color: white;
+        border: 2px solid #1e3d27;
     }
 
     .categories button {
@@ -262,37 +301,221 @@
     /* =========================
     MODAL
     ========================= */
+    /* BACKGROUND */
     .modal {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0,0,0,0.4);
+        backdrop-filter: blur(4px);
         justify-content: center;
         align-items: center;
     }
 
+    /* SHOW */
     .modal.show {
         display: flex;
     }
 
+    /* BOX */
     .modal-content {
         background: white;
         padding: 25px;
-        border-radius: 12px;
-        width: 450px;
+        border-radius: 16px;
+        width: 420px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        animation: popIn 0.25s ease;
     }
 
+    /* TITLE */
+    .modal-content h2 {
+        margin-bottom: 15px;
+    }
+
+    /* INPUTS */
     .modal-content input,
     .modal-content textarea {
         width: 100%;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+
+    /* FOCUS EFFECT */
+    .modal-content input:focus,
+    .modal-content textarea:focus {
+        border-color: #4e7d5a;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(78,125,90,0.15);
+    }
+
+    /* BUTTON ALIGNMENT */
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    /* CANCEL BUTTON */
+    .actions button:first-child {
+        background: #eee;
+        color: #333;
+    }
+
+    .actions button:first-child:hover {
+        background: #ddd;
+    }
+
+    /* ANIMATION */
+    @keyframes popIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* FORMS */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 12px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        margin-bottom: 4px;
+        color: #444;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
         padding: 10px;
-        border-radius: 6px;
+        border-radius: 8px;
         border: 1px solid #ccc;
+        font-size: 14px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 10px;
     }
 
     .actions {
         display: flex;
         justify-content: flex-end;
         gap: 10px;
+        margin-top: 10px;
+    }
+
+    .btn-primary {
+        background: #4e7d5a;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .btn-cancel {
+        background: #ddd;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .toast-message {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-16px);
+
+    min-width: 320px;
+    max-width: 420px;
+    width: max-content;
+
+    background: #ffffff;
+    border-left: 6px solid #4e7d5a;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 1200;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s ease;
+}
+
+    .toast-message.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
+    }
+
+    .toast-message.success {
+        border-left-color: #4e7d5a;
+    }
+
+    .toast-message.error {
+        border-left-color: #dc2626;
+    }
+
+    .toast-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #e8f5ec;
+        color: #4e7d5a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .toast-message.error .toast-icon {
+        background: #feecec;
+        color: #dc2626;
+    }
+
+    .toast-text {
+        flex: 1;
+    }
+
+    .toast-text strong {
+        display: block;
+        font-size: 15px;
+        color: #1f2937;
+        margin-bottom: 2px;
+    }
+
+    .toast-text p {
+        margin: 0;
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .toast-close {
+        border: none;
+        background: transparent;
+        color: #6b7280;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 4px;
+    }
+
+    .toast-close:hover {
+        color: #1f2937;
     }
