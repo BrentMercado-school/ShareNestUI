@@ -14,14 +14,31 @@ if (logoutBtn) {
             const data = await response.json();
 
             if (response.ok) {
-                alert(data.message);
-                window.location.href = "login.html";
+                if (typeof showToast === "function") {
+                    showToast(data.message || "Logged out successfully.", "success");
+
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 1200);
+                } else {
+                    alert(data.message || "Logged out successfully.");
+                    window.location.href = "login.html";
+                }
             } else {
-                alert(data.message || data.detail || "Logout failed.");
+                if (typeof showToast === "function") {
+                    showToast(data.message || data.detail || "Logout failed.", "error");
+                } else {
+                    alert(data.message || data.detail || "Logout failed.");
+                }
             }
         } catch (error) {
             console.log(error);
-            alert("Something went wrong.");
+
+            if (typeof showToast === "function") {
+                showToast("Something went wrong.", "error");
+            } else {
+                alert("Something went wrong.");
+            }
         }
     });
 }
