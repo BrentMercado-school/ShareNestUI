@@ -1,3 +1,5 @@
+/* css for dashboard
+
 /* =========================
 RESET
 ========================= */
@@ -859,5 +861,139 @@ RESPONSIVE
 
     .borrowed-info-text p {
         font-size: 1.05rem;
+    }
+}
+
+/* =========================
+MY ITEMS PAGE
+========================= */
+.filter-note {
+    margin: -6px 0 18px;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.my-items-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.my-item-card {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 18px;
+    align-items: center;
+    background: white;
+    border-radius: 18px;
+    padding: 16px 18px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    transition: 0.2s;
+}
+
+.my-item-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+}
+
+.my-item-thumb {
+    width: 120px;
+    height: 100px;
+    border-radius: 14px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #e5e7eb;
+}
+
+.my-item-content {
+    min-width: 0;
+}
+
+.my-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+.my-item-title {
+    margin: 0 0 4px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.my-item-meta {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+.my-item-deposit {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    color: #111827;
+    font-weight: 600;
+}
+
+.my-item-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.my-item-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.my-item-icon-btn {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+}
+
+.my-item-icon-btn:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.my-item-icon-btn.delete:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.my-item-empty {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    color: #6b7280;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 768px) {
+    .my-item-card {
+        grid-template-columns: 1fr;
+    }
+
+    .my-item-thumb {
+        width: 100%;
+        height: 180px;
+    }
+
+    .my-item-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

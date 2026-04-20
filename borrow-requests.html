@@ -4,29 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Borrow Requests</title>
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<!-- CSS -->
+<link rel="stylesheet" href="css/styleddb.css">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
+
 <body>
-    <h1>Borrow Requests For My Items</h1>
 
-    <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+<div class="layout">
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Borrower</th>
-                <th>Item</th>
-                <th>Start Date</th>
-                <th>Return Date</th>
-                <th>Status</th>
-                <th>Decline Reason</th>
-                <th>Borrowing Fee Snapshot</th>
-                <th>Security Deposit Snapshot</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="borrow-requests"></tbody>
-    </table>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">ShareNest</h2>
 
-    <script src="js/borrow-requests.js"></script>
+        <nav>
+            <a href="dashboard.html">
+                <i class="fa fa-home"></i> Home
+            </a>
+            <a href="my-items.html">
+                <i class="fa fa-box"></i> My Items
+            </a>
+            <a href="borrow-requests.html" class="active">
+                <i class="fa fa-file"></i> Requests
+            </a>
+            <a href="my-borrow-requests.html">
+                <i class="fa fa-file"></i> Your Requests
+            </a>
+            <a href="profile.html">
+                <i class="fa fa-user"></i> Profile
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ✅ MAIN CONTENT (THIS IS WHAT YOU WERE MISSING) -->
+    <main class="main">
+
+        <div class="navbar">
+            <h2>Requests</h2>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Borrower</th>
+                        <th>Item</th>
+                        <th>Start Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                        <th>Decline Reason</th>
+                        <th>Borrowing Fee</th>
+                        <th>Security Deposit</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="borrow-requests"></tbody>
+            </table>
+        </div>
+
+    </main>
+
+</div>
+
+<script src="js/borrow-requests.js"></script>
 </body>
-</html>
