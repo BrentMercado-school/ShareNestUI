@@ -7,6 +7,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
@@ -39,28 +40,21 @@
 
 </div>
 
+<div id="toast-message" class="toast-message error">
+    <div id="toast-icon" class="toast-icon">
+        <i class="fa-solid fa-circle-exclamation"></i>
+    </div>
+
+    <div class="toast-text">
+        <strong id="toast-title">Error</strong>
+        <p id="toast-text">Something went wrong.</p>
+    </div>
+
+    <button type="button" class="toast-close" onclick="hideToast()">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
+
 <script src="js/register.js"></script>
 </body>
 </html>
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Page</title>
-</head>
-<body>
-    <h1>Register Page</h1>
-    <form id="register-form">
-        <input type="text" id="name" placeholder="Enter name">
-        <input type="password" id="password" placeholder="Enter password">
-        <button type="submit">Create Account</button>
-    </form>
-
-    <p>Already have an account?</p> 
-    <a href="login.html">Login Here</a>
-
-    <script src="js/register.js"></script>
-</body>
-</html> -->
