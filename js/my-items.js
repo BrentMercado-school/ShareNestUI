@@ -54,24 +54,17 @@ function createItemCard(item) {
             }
 
             <div class="card-actions">
-                <button onclick="viewItem(${item.id})">View</button>
+    <button onclick="viewItem(${item.id})">View</button>
 
-                <button onclick="editItem(${item.id})"
-                    ${item.status === "BORROWED" ? "disabled" : ""}>
-                    Edit
-                </button>
-
-                <button onclick="deleteItemConfirm(${item.id}, '${item.name}')"
-                    ${item.status === "BORROWED" ? "disabled" : ""}>
-                    Delete
-                </button>
-
-                ${
-                    item.status === "BORROWED"
-                    ? `<button onclick="returnItem(${item.id})">Return</button>`
-                    : ""
-                }
-            </div>
+    ${
+        item.status !== "BORROWED"
+        ? `
+            <button onclick="editItem(${item.id})">Edit</button>
+            <button onclick="deleteItemConfirm(${item.id})">Delete</button>
+          `
+        : ""
+    }
+</div>
         </div>
     `;
 

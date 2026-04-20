@@ -26,7 +26,7 @@ function formatDate(dateString) {
 }
 
 /* =========================
-   LOAD ITEM DETAILS (MERGED)
+   LOAD ITEM DETAILS
 ========================= */
 async function getItemDetails() {
     const itemId = getItemIdFromUrl();
@@ -58,7 +58,6 @@ async function getItemDetails() {
         document.getElementById("item-security-deposit").textContent = data.security_deposit || "N/A";
         document.getElementById("item-note").textContent = data.note || "N/A";
 
-        // FIXED (handles both API names)
         document.getElementById("item-borrowing-fee").textContent =
             data.borrowing_fee ?? data.borrowingFee ?? "N/A";
 
@@ -67,15 +66,19 @@ async function getItemDetails() {
 
         const returnDateEl = document.getElementById("item-expected-return-date");
         const returnBtn = document.getElementById("return-item-btn");
+        const editBtn = document.getElementById("edit-btn");
+        const deleteBtn = document.getElementById("delete-btn");
 
         if (data.status === "BORROWED") {
             returnDateEl.textContent = formatDate(data.expected_return_date);
-
             if (returnBtn) returnBtn.style.display = "inline-block";
+            if (editBtn) editBtn.style.display = "none";
+            if (deleteBtn) deleteBtn.style.display = "none";
         } else {
             returnDateEl.textContent = "N/A";
-
             if (returnBtn) returnBtn.style.display = "none";
+            if (editBtn) editBtn.style.display = "inline-block";
+            if (deleteBtn) deleteBtn.style.display = "inline-block";
         }
 
     } catch (error) {
@@ -85,7 +88,7 @@ async function getItemDetails() {
 }
 
 /* =========================
-   DELETE (REUSED)
+   DELETE
 ========================= */
 async function handleDelete() {
     if (!selectedItem) return;
@@ -111,7 +114,9 @@ async function handleDelete() {
     }
 }
 
-
+/* =========================
+   EDIT
+========================= */
 function handleEdit() {
     if (!selectedItem) return;
     openEditItemModal(selectedItem); // from edit-item.js
