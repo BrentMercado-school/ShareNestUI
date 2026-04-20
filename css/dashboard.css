@@ -1346,3 +1346,512 @@ RETURN ITEM MODAL
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================
+REQUEST PAGE
+========================= */
+.request-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.request-card {
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.request-card-inner {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 18px;
+    padding: 16px;
+    align-items: center;
+}
+
+.request-thumb {
+    width: 130px;
+    height: 120px;
+    border-radius: 14px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #e5e7eb;
+}
+
+.request-content {
+    min-width: 0;
+}
+
+.request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.request-title {
+    margin: 0 0 4px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.request-category {
+    margin: 0 0 10px;
+    color: #475569;
+    font-size: 1rem;
+}
+
+.request-date-line {
+    margin: 0 0 4px;
+    color: #334155;
+    font-size: 0.98rem;
+}
+
+.request-deposit {
+    margin: 6px 0 10px;
+    color: #111827;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.request-borrower {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4e7d5a;
+    font-size: 0.98rem;
+    margin-bottom: 14px;
+}
+
+.request-status-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.request-status-pending {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.request-status-approved {
+    background: #e6f4ea;
+    color: #2e7d32;
+}
+
+.request-status-declined,
+.request-status-cancelled {
+    background: #fdecea;
+    color: #c62828;
+}
+
+.request-status-returned {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.request-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.request-accept-btn,
+.request-secondary-btn {
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.request-accept-btn {
+    background: #4e7d5a;
+    color: white;
+}
+
+.request-accept-btn:hover {
+    background: #3c6448;
+}
+
+.request-secondary-btn {
+    background: #e5e7eb;
+    color: #334155;
+}
+
+.request-secondary-btn:hover {
+    background: #d1d5db;
+}
+
+.request-details-only {
+    grid-column: span 3;
+}
+
+.request-empty {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    color: #6b7280;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 768px) {
+    .request-card-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .request-thumb {
+        width: 100%;
+        height: 180px;
+    }
+
+    .request-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .request-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .request-details-only {
+        grid-column: auto;
+    }
+}
+/* =========================
+MY BORROW REQUEST CARDS
+========================= */
+.my-borrow-card {
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.my-borrow-card-inner {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 20px;
+    padding: 16px;
+    align-items: stretch;
+}
+
+.my-borrow-thumb {
+    width: 100%;
+    height: 100%;
+    min-height: 170px;
+    border-radius: 16px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #e5e7eb;
+}
+
+.my-borrow-content {
+    min-width: 0;
+}
+
+.my-borrow-title {
+    margin: 0 0 6px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.my-borrow-category {
+    margin: 0 0 10px;
+    color: #475569;
+    font-size: 1rem;
+}
+
+.my-borrow-date-line {
+    margin: 0 0 4px;
+    color: #334155;
+    font-size: 0.98rem;
+}
+
+.my-borrow-deposit {
+    margin: 6px 0 12px;
+    color: #111827;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.my-borrow-bottom-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.my-borrow-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.my-borrow-status-pill.pending {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.my-borrow-status-pill.accepted {
+    background: #e6f4ea;
+    color: #2e7d32;
+}
+
+.my-borrow-status-pill.declined {
+    background: #fdecea;
+    color: #dc2626;
+}
+
+.my-borrow-status-pill.cancelled {
+    background: #e5e7eb;
+    color: #64748b;
+}
+
+.my-borrow-status-pill.returned {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.my-borrow-cancel-btn {
+    background: #ff0000;
+    color: white;
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-weight: 700;
+}
+
+.my-borrow-cancel-btn:hover {
+    background: #dc2626;
+}
+
+@media (max-width: 768px) {
+    .my-borrow-card-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .my-borrow-thumb {
+        width: 100%;
+        height: 180px;
+    }
+}
+/* =========================
+REQUEST ACTION MODALS
+========================= */
+.request-action-modal {
+    max-width: 470px;
+    width: 100%;
+    border-radius: 22px;
+    padding: 28px 26px 24px;
+    text-align: center;
+}
+
+.request-action-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+}
+
+.request-action-icon.success {
+    background: #e8f5ec;
+    color: #2e7d32;
+}
+
+.request-action-icon.danger {
+    background: #fdecec;
+    color: #dc2626;
+}
+
+.request-action-modal h2 {
+    margin-bottom: 12px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.request-action-text {
+    margin: 0 0 20px;
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.request-action-text strong {
+    display: block;
+    margin-top: 4px;
+    color: #111827;
+    font-weight: 700;
+}
+
+.request-action-text span {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.92rem;
+    color: #64748b;
+}
+
+.request-decline-group {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.request-decline-group textarea {
+    resize: none;
+    min-height: 110px;
+}
+
+.request-action-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.request-modal-cancel-btn,
+.request-modal-confirm-btn,
+.request-modal-danger-btn {
+    padding: 14px 0;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.request-modal-cancel-btn {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+.request-modal-cancel-btn:hover {
+    background: #d1d5db;
+}
+
+.request-modal-confirm-btn {
+    background: #4e7d5a;
+    color: white;
+}
+
+.request-modal-confirm-btn:hover {
+    background: #3c6448;
+}
+
+.request-modal-danger-btn {
+    background: #dc2626;
+    color: white;
+}
+
+.request-modal-danger-btn:hover {
+    background: #b91c1c;
+}
+
+@media (max-width: 768px) {
+    .request-action-actions {
+        grid-template-columns: 1fr;
+    }
+}
+.request-track-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 6px 0 12px;
+}
+
+.request-track-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.request-track-pill.ontrack {
+    background: #e6f4ea;
+    color: #2e7d32;
+}
+
+.request-track-pill.overdue {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.request-track-pill.neutral {
+    background: #e5e7eb;
+    color: #475569;
+}
+
+.request-track-detail {
+    font-size: 0.92rem;
+    color: #64748b;
+}
+
+.request-card.ongoing-request-card .request-card-inner {
+    grid-template-columns: 210px 1fr;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.request-card.ongoing-request-card .request-thumb {
+    width: 100%;
+    height: 100%;
+    min-height: 170px;
+    border-radius: 16px;
+    background-size: cover;
+    background-position: center;
+}
+.my-borrow-card.history-borrow-card .my-borrow-card-inner {
+    grid-template-columns: 210px 1fr;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.my-borrow-card.history-borrow-card .my-borrow-thumb {
+    width: 100%;
+    height: 100%;
+    min-height: 170px;
+    border-radius: 16px;
+    background-size: cover;
+    background-position: center;
+}
+.my-borrow-decline-box {
+    margin: 10px 0 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+}
+
+.my-borrow-decline-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #be123c;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.my-borrow-decline-box p {
+    margin: 0;
+    color: #881337;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}

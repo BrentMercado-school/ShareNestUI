@@ -1,5 +1,8 @@
 const API_URL = "http://127.0.0.1:8000/api/";
 
+/* =========================
+   COOKIE
+========================= */
 function getCookie(name) {
     let cookieValue = null;
 
@@ -19,37 +22,32 @@ function getCookie(name) {
     return cookieValue;
 }
 
+/* =========================
+   HELPERS
+========================= */
 function formatDate(dateString) {
     if (!dateString) return "N/A";
 
-    const date = new Date(dateString);
-
-    return date.toLocaleDateString("en-PH", {
+    return new Date(dateString).toLocaleDateString("en-PH", {
         year: "numeric",
-        month: "long",
+        month: "short",
         day: "numeric"
     });
 }
 
-function getCookie(name) {
-    let cookieValue = null;
-
-    if (document.cookie && document.cookie !== "") {
-        const cookies = document.cookie.split(";");
-
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-
-            if (cookie.startsWith(name + "=")) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-
-    return cookieValue;
+function statusBadge(status) {
+    const map = {
+        PENDING:   `<span class="badge badge-pending">Pending</span>`,
+        ACCEPTED:  `<span class="badge badge-accepted">Accepted</span>`,
+        DECLINED:  `<span class="badge badge-declined">Declined</span>`,
+        CANCELLED: `<span class="badge badge-cancelled">Cancelled</span>`,
+    };
+    return map[status] || `<span class="badge">${status}</span>`;
 }
 
+/* =========================
+   CANCEL REQUEST
+========================= */
 async function cancelBorrowRequest(requestId) {
     try {
         const response = await fetch(API_URL + `borrow-forms/${requestId}/cancel/`, {
@@ -59,113 +57,135 @@ async function cancelBorrowRequest(requestId) {
                 "X-CSRFToken": getCookie("csrftoken")
             },
             credentials: "include",
-            body: JSON.stringify({
-                status: "CANCELLED"
-            })
+            body: JSON.stringify({ status: "CANCELLED" })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            alert(data.message || "Borrow request cancelled successfully.");
+            alert(data.message || "Cancelled.");
             await getMyBorrowRequests();
         } else {
-            alert(data.detail || data.message || "Failed to cancel request.");
-            console.log(data);
+            alert(data.detail || "Failed.");
         }
+
     } catch (error) {
-        console.log("cancelBorrowRequest error:", error);
-        alert("Something went wrong while cancelling the request.");
+        console.log(error);
     }
 }
 
+/* =========================
+   CUSTOM CONFIRM MODAL
+========================= */
+function showConfirm(message, onConfirm) {
+    const modal = document.getElementById("confirm-modal");
+    document.getElementById("confirm-message").textContent = message;
+
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+
+    const okBtn = document.getElementById("confirm-ok-btn");
+    const cancelBtn = document.getElementById("confirm-cancel-btn");
+
+    // Clone buttons to remove old listeners
+    const newOkBtn = okBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    okBtn.replaceWith(newOkBtn);
+    cancelBtn.replaceWith(newCancelBtn);
+
+    function closeModal() {
+        modal.classList.remove("show");
+        document.body.style.overflow = "";
+    }
+
+    newOkBtn.addEventListener("click", () => {
+        closeModal();
+        onConfirm();
+    });
+
+    newCancelBtn.addEventListener("click", closeModal);
+
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+    });
+}
+
+/* =========================
+   HANDLE CANCEL (updated)
+========================= */
+function handleCancel(id, itemName) {
+    showConfirm(`Cancel request for "${itemName}"?`, () => {
+        cancelBorrowRequest(id);
+    });
+}
+
+/* =========================
+   CARD TEMPLATE
+========================= */
+function createCard(request) {
+    return `
+        <div class="card">
+
+            <h3>${request.item_name || "N/A"}</h3>
+
+            <p><i class="fa fa-user"></i> ${request.owner_name || "N/A"}</p>
+
+            <p><b>Start:</b> ${formatDate(request.startDate)}</p>
+            <p><b>Return:</b> ${formatDate(request.returnDate)}</p>
+
+            ${statusBadge(request.status)}
+
+            ${
+                request.declineReason
+                ? `<p><b>Reason:</b> ${request.declineReason}</p>`
+                : ""
+            }
+
+            <p>Fee: ₱${request.borrowingFeeSnapshot || 0}</p>
+            <p>Deposit: ₱${request.securityDepositSnapshot || 0}</p>
+
+            ${
+                request.status === "PENDING"
+                ? `<button class="btn" onclick="handleCancel(${request.id}, '${request.item_name}')">
+                       Cancel Request
+                   </button>`
+                : ""
+            }
+
+        </div>
+    `;
+}
+
+/* =========================
+   LOAD DATA
+========================= */
 async function getMyBorrowRequests() {
     try {
         const response = await fetch(API_URL + "users/my-borrow-requests/", {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             credentials: "include"
         });
 
         const data = await response.json();
-        console.log("My borrow requests:", data);
 
-        const tbody = document.getElementById("my-borrow-requests");
-        tbody.innerHTML = "";
+        const container = document.getElementById("requests-container");
+        container.innerHTML = "";
 
         if (!data.length) {
-            const row = document.createElement("tr");
-            const cell = document.createElement("td");
-            cell.colSpan = 9;
-            cell.textContent = "No borrow requests found.";
-            row.appendChild(cell);
-            tbody.appendChild(row);
+            container.innerHTML = "<p>No borrow requests found.</p>";
             return;
         }
 
-        for (const request of data) {
-            const row = document.createElement("tr");
+        container.innerHTML = data.map(createCard).join("");
 
-            const itemCell = document.createElement("td");
-            itemCell.textContent = request.item_name || "N/A";
-
-            const ownerCell = document.createElement("td");
-            ownerCell.textContent = request.owner_name || "N/A";
-
-            const startDateCell = document.createElement("td");
-            startDateCell.textContent = formatDate(request.startDate);
-
-            const returnDateCell = document.createElement("td");
-            returnDateCell.textContent = formatDate(request.returnDate);
-
-            const statusCell = document.createElement("td");
-            statusCell.textContent = request.status || "N/A";
-
-            const declineReasonCell = document.createElement("td");
-            declineReasonCell.textContent = request.declineReason || "N/A";
-
-            const borrowingFeeCell = document.createElement("td");
-            borrowingFeeCell.textContent = request.borrowingFeeSnapshot || "N/A";
-
-            const securityDepositCell = document.createElement("td");
-            securityDepositCell.textContent = request.securityDepositSnapshot || "N/A";
-
-            const actionCell = document.createElement("td");
-            const cancelBtn = document.createElement("button");
-            cancelBtn.textContent = "Cancel Request";
-
-            if (request.status === "PENDING") {
-                cancelBtn.addEventListener("click", async () => {
-                    const isConfirmed = confirm(`Cancel your request for "${request.item_name}"?`);
-                    if (!isConfirmed) return;
-
-                    await cancelBorrowRequest(request.id);
-                });
-            } else {
-                cancelBtn.disabled = true;
-                cancelBtn.title = "Only pending requests can be cancelled";
-            }
-
-            actionCell.appendChild(cancelBtn);
-
-            row.appendChild(itemCell);
-            row.appendChild(ownerCell);
-            row.appendChild(startDateCell);
-            row.appendChild(returnDateCell);
-            row.appendChild(statusCell);
-            row.appendChild(declineReasonCell);
-            row.appendChild(borrowingFeeCell);
-            row.appendChild(securityDepositCell);
-            row.appendChild(actionCell);
-
-            tbody.appendChild(row);
-        }
     } catch (error) {
         console.log(error);
         alert("Something went wrong.");
     }
 }
 
-getMyBorrowRequests();
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", getMyBorrowRequests);

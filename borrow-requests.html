@@ -4,73 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Borrow Requests</title>
-<!-- Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-<!-- CSS -->
-<link rel="stylesheet" href="css/styleddb.css">
-
-<!-- Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
+    <div class="layout">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo">ShareNest</a>
 
-<div class="layout">
+            <nav>
+                <a href="dashboard.html">
+                    <i class="fa fa-home"></i> Home
+                </a>
+                <a href="my-items.html">
+                    <i class="fa fa-box"></i> My Items
+                </a>
+                <a href="borrow-requests.html" class="active">
+                    <i class="fa fa-file"></i> Requests
+                </a>
+                <a href="profile.html">
+                    <i class="fa fa-user"></i> Profile
+                </a>
+            </nav>
+        </aside>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <h2 class="logo">ShareNest</h2>
+        <main class="main">
+            <div class="navbar">
+                <div class="user">
+                    <div id="requests-avatar" class="avatar-circle"></div>
+                    <div>
+                        <p>Manage</p>
+                        <h3 id="requests-title">Requests</h3>
+                    </div>
+                </div>
+            </div>
 
-        <nav>
-            <a href="dashboard.html">
-                <i class="fa fa-home"></i> Home
-            </a>
-            <a href="my-items.html">
-                <i class="fa fa-box"></i> My Items
-            </a>
-            <a href="borrow-requests.html" class="active">
-                <i class="fa fa-file"></i> Requests
-            </a>
-            <a href="my-borrow-requests.html">
-                <i class="fa fa-file"></i> Your Requests
-            </a>
-            <a href="profile.html">
-                <i class="fa fa-user"></i> Profile
-            </a>
-        </nav>
-    </aside>
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" id="request-search" placeholder="Search your requests...">
+            </div>
 
-    <!-- ✅ MAIN CONTENT (THIS IS WHAT YOU WERE MISSING) -->
-    <main class="main">
+            <div class="categories">
+                <button type="button" class="active" data-filter="all" onclick="setRequestFilter('all')">All</button>
+                <button type="button" data-filter="my-borrow-request" onclick="setRequestFilter('my-borrow-request')">My Borrow Request</button>
+                <button type="button" data-filter="ongoing" onclick="setRequestFilter('ongoing')">Ongoing</button>
+                <button type="button" data-filter="history" onclick="setRequestFilter('history')">History</button>
+            </div>
 
-        <div class="navbar">
-            <h2>Requests</h2>
+            <p id="request-filter-note" class="filter-note">Filtered: All</p>
+
+            <div class="section">
+                <div id="request-list" class="request-list"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- APPROVE REQUEST MODAL -->
+<div id="accept-confirm-modal" class="modal">
+    <div class="modal-content request-action-modal">
+        <div class="request-action-icon success">
+            <i class="fa-solid fa-circle-check"></i>
         </div>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Borrower</th>
-                        <th>Item</th>
-                        <th>Start Date</th>
-                        <th>Return Date</th>
-                        <th>Status</th>
-                        <th>Decline Reason</th>
-                        <th>Borrowing Fee</th>
-                        <th>Security Deposit</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="borrow-requests"></tbody>
-            </table>
+        <h2>Approve Request</h2>
+        <p class="request-action-text">
+            Approve borrow request for
+            <strong id="accept-request-item-name">"Item"</strong>
+            <span>All other pending requests for this item will be automatically declined.</span>
+        </p>
+
+        <div class="request-action-actions">
+            <button type="button" id="cancel-accept-request-btn" class="request-modal-cancel-btn">Cancel</button>
+            <button type="button" id="confirm-accept-request-btn" class="request-modal-confirm-btn">Confirm</button>
         </div>
-
-    </main>
-
+    </div>
 </div>
 
-<script src="js/borrow-requests.js"></script>
+    <!-- DECLINE REASON MODAL -->
+    <div id="decline-reason-modal" class="modal">
+        <div class="modal-content request-action-modal">
+            <div class="request-action-icon danger">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h2>Decline Request</h2>
+            <p class="request-action-text">
+                Enter a reason for declining
+                <strong id="decline-request-item-name">"Item"</strong>.
+            </p>
+
+            <div class="form-group request-decline-group">
+                <label for="decline-reason-input">Decline Reason</label>
+                <textarea id="decline-reason-input" rows="4" placeholder="Type the decline reason here..."></textarea>
+            </div>
+
+            <div class="request-action-actions">
+                <button type="button" id="cancel-decline-request-btn" class="request-modal-cancel-btn">Cancel</button>
+                <button type="button" id="submit-decline-request-btn" class="request-modal-danger-btn">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-message" class="toast-message">
+        <div id="toast-icon" class="toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <div class="toast-text">
+            <strong id="toast-title">Success</strong>
+            <p id="toast-text">Action completed successfully.</p>
+        </div>
+
+        <button type="button" class="toast-close" onclick="hideToast()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <script src="js/borrow-requests.js"></script>
 </body>
+</html>

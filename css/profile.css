@@ -17,12 +17,14 @@ body.profile-page {
    PAGE LAYOUT
 ========================= */
 .dashboard-layout {
+    display: flex;
     min-height: 100vh;
 }
 
 .main-content {
     margin-left: 240px;
     padding: 30px;
+    width: calc(100% - 240px);
 }
 
 .profile-shell {
@@ -46,8 +48,12 @@ body.profile-page {
 }
 
 .logo {
-    margin-bottom: 30px;
     color: white;
+    text-decoration: none;
+    font-size: 1.4rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 30px;
 }
 
 .sidebar nav a {
