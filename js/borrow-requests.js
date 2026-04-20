@@ -1,12 +1,34 @@
 const API_URL = "http://127.0.0.1:8000/api/";
 
+/* =========================
+   HELPERS
+========================= */
+function formatDate(dateString) {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-PH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+}
+
+function statusBadge(status) {
+    const map = {
+        PENDING:  `<span class="badge badge-pending">Pending</span>`,
+        ACCEPTED: `<span class="badge badge-accepted">Accepted</span>`,
+        DECLINED: `<span class="badge badge-declined">Declined</span>`,
+    };
+    return map[status] || `<span class="badge">${status}</span>`;
+}
+
+/* =========================
+   ACCEPT
+========================= */
 async function acceptBorrowRequest(requestId) {
     try {
         const response = await fetch(API_URL + `borrow-requests/${requestId}/accept/`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             credentials: "include"
         });
 
@@ -24,17 +46,16 @@ async function acceptBorrowRequest(requestId) {
     }
 }
 
+/* =========================
+   DECLINE
+========================= */
 async function declineBorrowRequest(requestId, declineReason) {
     try {
         const response = await fetch(API_URL + `borrow-requests/${requestId}/decline/`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             credentials: "include",
-            body: JSON.stringify({
-                declineReason
-            })
+            body: JSON.stringify({ declineReason })
         });
 
         const data = await response.json();
@@ -51,13 +72,14 @@ async function declineBorrowRequest(requestId, declineReason) {
     }
 }
 
+/* =========================
+   LOAD REQUESTS
+========================= */
 async function getBorrowRequests() {
     try {
         const response = await fetch(API_URL + "users/owned-item-borrow-requests/", {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             credentials: "include"
         });
 
@@ -67,85 +89,61 @@ async function getBorrowRequests() {
         const tbody = document.getElementById("borrow-requests");
         tbody.innerHTML = "";
 
-        const pendingRequests = data.filter((request) => request.status === "PENDING");
+        const pendingRequests = data.filter(r => r.status === "PENDING");
 
         if (!pendingRequests.length) {
-            const row = document.createElement("tr");
-            const cell = document.createElement("td");
-            cell.colSpan = 9;
-            cell.textContent = "No pending borrow requests found.";
-            row.appendChild(cell);
-            tbody.appendChild(row);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align:center; padding: 30px; color: #777;">
+                        No pending borrow requests found.
+                    </td>
+                </tr>`;
             return;
         }
 
         for (const request of pendingRequests) {
             const row = document.createElement("tr");
 
-            const borrowerCell = document.createElement("td");
-            borrowerCell.textContent = request.borrower_name || request.borrower || "N/A";
+            row.innerHTML = `
+                <td>${request.borrower_name || request.borrower || "N/A"}</td>
+                <td>${request.item_name || request.item || "N/A"}</td>
+                <td>${formatDate(request.startDate)}</td>
+                <td>${formatDate(request.returnDate)}</td>
+                <td>${statusBadge(request.status)}</td>
+                <td>${request.declineReason || "N/A"}</td>
+                <td>${request.borrowingFeeSnapshot || "N/A"}</td>
+                <td>${request.securityDepositSnapshot || "N/A"}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="btn-accept" data-id="${request.id}">Accept</button>
+                        <button class="btn-decline" data-id="${request.id}">Decline</button>
+                    </div>
+                </td>
+            `;
 
-            const itemCell = document.createElement("td");
-            itemCell.textContent = request.item_name || request.item || "N/A";
-
-            const startDateCell = document.createElement("td");
-            startDateCell.textContent = request.startDate || "N/A";
-
-            const returnDateCell = document.createElement("td");
-            returnDateCell.textContent = request.returnDate || "N/A";
-
-            const statusCell = document.createElement("td");
-            statusCell.textContent = request.status || "N/A";
-
-            const declineReasonCell = document.createElement("td");
-            declineReasonCell.textContent = request.declineReason || "N/A";
-
-            const borrowingFeeCell = document.createElement("td");
-            borrowingFeeCell.textContent = request.borrowingFeeSnapshot || "N/A";
-
-            const securityDepositCell = document.createElement("td");
-            securityDepositCell.textContent = request.securityDepositSnapshot || "N/A";
-
-            const actionsCell = document.createElement("td");
-
-            const acceptBtn = document.createElement("button");
-            acceptBtn.textContent = "Accept";
-            acceptBtn.addEventListener("click", async () => {
-                const isConfirmed = confirm("Approve this borrow request?");
-                if (!isConfirmed) return;
-
+            // Accept
+            row.querySelector(".btn-accept").addEventListener("click", async () => {
+                if (!confirm("Approve this borrow request?")) return;
                 await acceptBorrowRequest(request.id);
             });
 
-            const declineBtn = document.createElement("button");
-            declineBtn.textContent = "Decline";
-            declineBtn.addEventListener("click", async () => {
-                const isConfirmed = confirm("Decline this borrow request?");
-                if (!isConfirmed) return;
-
+            // Decline
+            row.querySelector(".btn-decline").addEventListener("click", async () => {
+                if (!confirm("Decline this borrow request?")) return;
                 const declineReason = prompt("Enter decline reason:") || "";
                 await declineBorrowRequest(request.id, declineReason);
             });
 
-            actionsCell.appendChild(acceptBtn);
-            actionsCell.appendChild(declineBtn);
-
-            row.appendChild(borrowerCell);
-            row.appendChild(itemCell);
-            row.appendChild(startDateCell);
-            row.appendChild(returnDateCell);
-            row.appendChild(statusCell);
-            row.appendChild(declineReasonCell);
-            row.appendChild(borrowingFeeCell);
-            row.appendChild(securityDepositCell);
-            row.appendChild(actionsCell);
-
             tbody.appendChild(row);
         }
+
     } catch (error) {
         console.log(error);
         alert("Something went wrong.");
     }
 }
 
-getBorrowRequests();
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", getBorrowRequests);

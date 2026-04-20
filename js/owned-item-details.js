@@ -87,15 +87,34 @@ async function getItemDetails() {
 /* =========================
    DELETE (REUSED)
 ========================= */
-function handleDelete() {
+async function handleDelete() {
     if (!selectedItem) return;
 
-    deleteItemConfirm(selectedItem.id, selectedItem.name);
+    if (!confirm(`Delete "${selectedItem.name}"?`)) return;
+
+    try {
+        const res = await fetch(API_URL + `items/${selectedItem.id}/delete/`, {
+            method: "DELETE",
+            credentials: "include"
+        });
+
+        if (res.ok) {
+            alert("Deleted successfully");
+            window.location.href = "my-items.html";
+        } else {
+            alert("Delete failed");
+        }
+
+    } catch (err) {
+        console.log(err);
+        alert("Error deleting");
+    }
 }
+
 
 function handleEdit() {
     if (!selectedItem) return;
-    openEditItemModal(selectedItem);
+    openEditItemModal(selectedItem); // from edit-item.js
 }
 
 /* =========================

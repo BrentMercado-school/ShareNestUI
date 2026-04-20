@@ -1,6 +1,8 @@
 const API_URL = "http://127.0.0.1:8000/api/";
 
-/* COOKIE */
+/* =========================
+   COOKIE
+========================= */
 function getCookie(name) {
     let cookieValue = null;
 
@@ -20,20 +22,32 @@ function getCookie(name) {
     return cookieValue;
 }
 
-/* DATE FORMAT */
+/* =========================
+   HELPERS
+========================= */
 function formatDate(dateString) {
     if (!dateString) return "N/A";
 
-    const date = new Date(dateString);
-
-    return date.toLocaleDateString("en-PH", {
+    return new Date(dateString).toLocaleDateString("en-PH", {
         year: "numeric",
         month: "short",
         day: "numeric"
     });
 }
 
-/* CANCEL REQUEST */
+function statusBadge(status) {
+    const map = {
+        PENDING:   `<span class="badge badge-pending">Pending</span>`,
+        ACCEPTED:  `<span class="badge badge-accepted">Accepted</span>`,
+        DECLINED:  `<span class="badge badge-declined">Declined</span>`,
+        CANCELLED: `<span class="badge badge-cancelled">Cancelled</span>`,
+    };
+    return map[status] || `<span class="badge">${status}</span>`;
+}
+
+/* =========================
+   CANCEL REQUEST
+========================= */
 async function cancelBorrowRequest(requestId) {
     try {
         const response = await fetch(API_URL + `borrow-forms/${requestId}/cancel/`, {
@@ -43,9 +57,7 @@ async function cancelBorrowRequest(requestId) {
                 "X-CSRFToken": getCookie("csrftoken")
             },
             credentials: "include",
-            body: JSON.stringify({
-                status: "CANCELLED"
-            })
+            body: JSON.stringify({ status: "CANCELLED" })
         });
 
         const data = await response.json();
@@ -62,7 +74,54 @@ async function cancelBorrowRequest(requestId) {
     }
 }
 
-/* CARD TEMPLATE */
+/* =========================
+   CUSTOM CONFIRM MODAL
+========================= */
+function showConfirm(message, onConfirm) {
+    const modal = document.getElementById("confirm-modal");
+    document.getElementById("confirm-message").textContent = message;
+
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+
+    const okBtn = document.getElementById("confirm-ok-btn");
+    const cancelBtn = document.getElementById("confirm-cancel-btn");
+
+    // Clone buttons to remove old listeners
+    const newOkBtn = okBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    okBtn.replaceWith(newOkBtn);
+    cancelBtn.replaceWith(newCancelBtn);
+
+    function closeModal() {
+        modal.classList.remove("show");
+        document.body.style.overflow = "";
+    }
+
+    newOkBtn.addEventListener("click", () => {
+        closeModal();
+        onConfirm();
+    });
+
+    newCancelBtn.addEventListener("click", closeModal);
+
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+    });
+}
+
+/* =========================
+   HANDLE CANCEL (updated)
+========================= */
+function handleCancel(id, itemName) {
+    showConfirm(`Cancel request for "${itemName}"?`, () => {
+        cancelBorrowRequest(id);
+    });
+}
+
+/* =========================
+   CARD TEMPLATE
+========================= */
 function createCard(request) {
     return `
         <div class="card">
@@ -74,9 +133,7 @@ function createCard(request) {
             <p><b>Start:</b> ${formatDate(request.startDate)}</p>
             <p><b>Return:</b> ${formatDate(request.returnDate)}</p>
 
-            <p class="status ${request.status.toLowerCase()}">
-                ${request.status || "N/A"}
-            </p>
+            ${statusBadge(request.status)}
 
             ${
                 request.declineReason
@@ -87,34 +144,26 @@ function createCard(request) {
             <p>Fee: ₱${request.borrowingFeeSnapshot || 0}</p>
             <p>Deposit: ₱${request.securityDepositSnapshot || 0}</p>
 
-            <button 
-                class="btn"
-                ${request.status !== "PENDING" ? "disabled" : ""}
-                onclick="handleCancel(${request.id}, '${request.item_name}')"
-            >
-                Cancel Request
-            </button>
+            ${
+                request.status === "PENDING"
+                ? `<button class="btn" onclick="handleCancel(${request.id}, '${request.item_name}')">
+                       Cancel Request
+                   </button>`
+                : ""
+            }
 
         </div>
     `;
 }
 
-/* HANDLE CANCEL */
-function handleCancel(id, itemName) {
-    const confirmCancel = confirm(`Cancel request for "${itemName}"?`);
-    if (!confirmCancel) return;
-
-    cancelBorrowRequest(id);
-}
-
-/* LOAD DATA */
+/* =========================
+   LOAD DATA
+========================= */
 async function getMyBorrowRequests() {
     try {
         const response = await fetch(API_URL + "users/my-borrow-requests/", {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             credentials: "include"
         });
 
@@ -136,4 +185,7 @@ async function getMyBorrowRequests() {
     }
 }
 
-getMyBorrowRequests();
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", getMyBorrowRequests);

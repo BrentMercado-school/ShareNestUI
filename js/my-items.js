@@ -1,13 +1,19 @@
 const API_URL = "http://127.0.0.1:8000/api/";
-
-const ownedContainer = document.getElementById("owned-items");
-const availableContainer = document.getElementById("available-owned-items");
-const borrowedContainer = document.getElementById("borrowed-owned-items");
-
-/* =========================
-   ITEM MAP (for edit lookup)
-========================= */
 const itemsMap = {};
+
+let ownedContainer;
+let availableContainer;
+let borrowedContainer;
+
+// ... all your functions stay the same ...
+
+document.addEventListener("DOMContentLoaded", () => {
+    ownedContainer = document.getElementById("owned-items");
+    availableContainer = document.getElementById("available-owned-items");
+    borrowedContainer = document.getElementById("my-borrowed-items");
+
+    loadItems();
+});
 
 /* =========================
    HELPERS
@@ -85,7 +91,10 @@ function editItem(id) {
     openEditItemModal(item); // from edit-item.js
 }
 
-async function deleteItemConfirm(id, name) {
+async function deleteItemConfirm(id) {
+    const item = itemsMap[id];                          // ✅ look up from map
+    const name = item?.name || "this item";
+
     const confirmDelete = confirm(`Delete "${name}"?`);
     if (!confirmDelete) return;
 
@@ -133,18 +142,20 @@ async function loadItems() {
         }
 
         data.forEach(item => {
-            itemsMap[item.id] = item; // store full item for edit lookup
+    itemsMap[item.id] = item;
 
-            ownedContainer.appendChild(createItemCard(item));
+    ownedContainer.appendChild(createItemCard(item));
 
-            if (item.status === "AVAILABLE") {
-                availableContainer.appendChild(createItemCard(item));
-            }
+    console.log(item.name, "→ status:", item.status); // ✅ add this
 
-            if (item.status === "BORROWED") {
-                borrowedContainer.appendChild(createItemCard(item));
-            }
-        });
+    if (item.status === "AVAILABLE") {
+        availableContainer.appendChild(createItemCard(item));
+    }
+
+    if (item.status === "BORROWED") {
+        borrowedContainer.appendChild(createItemCard(item));
+    }
+});
 
     } catch (err) {
         console.log(err);
@@ -158,8 +169,3 @@ async function loadItems() {
 document.addEventListener("itemUpdated", () => {
     loadItems();
 });
-
-/* =========================
-   INIT
-========================= */
-document.addEventListener("DOMContentLoaded", loadItems);

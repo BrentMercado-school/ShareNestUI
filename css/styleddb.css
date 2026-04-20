@@ -514,3 +514,120 @@
 .btn-save:hover {
     background: #3a6347;
 }
+
+
+/* =========================
+   TABLE
+========================= */
+.table-container {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    margin-top: 24px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #4e7d5a;
+}
+
+thead th {
+    color: white;
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.15s;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #f7faf8;
+}
+
+tbody td {
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    color: #374151;
+    vertical-align: middle;
+}
+
+/* STATUS BADGE */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-pending {
+    background: #fff8e1;
+    color: #f59e0b;
+}
+
+.badge-accepted {
+    background: #e6f4ea;
+    color: #2e7d32;
+}
+
+.badge-declined {
+    background: #fdecea;
+    color: #c62828;
+}
+
+/* ACTION BUTTONS */
+.btn-accept {
+    background: #4e7d5a;
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-accept:hover {
+    background: #3c6448;
+}
+
+.btn-decline {
+    background: white;
+    color: #c62828;
+    border: 1px solid #c62828;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-decline:hover {
+    background: #fdecea;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.badge-cancelled {
+    background: #f3f4f6;
+    color: #6b7280;
+}
